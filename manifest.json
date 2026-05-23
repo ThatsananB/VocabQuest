@@ -1,0 +1,25 @@
+{
+  "name": "VocabQuest — เรียนคำศัพท์",
+  "short_name": "VocabQuest",
+  "description": "เกมเรียนคำศัพท์แบบ Duolingo เพิ่มคำศัพท์เองได้",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#58cc02",
+  "theme_color": "#58cc02",
+  "orientation": "portrait",
+  "lang": "th",
+  "icons": [
+    {
+      "src": "icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
