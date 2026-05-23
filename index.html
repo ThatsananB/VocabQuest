@@ -465,11 +465,6 @@ const SAMPLE_DECKS = [
     words:[{front:'สวัสดี',back:'こんにちは'},{front:'ขอบคุณ',back:'ありがとう'},{front:'ใช่',back:'はい'},{front:'ไม่',back:'いいえ'},{front:'น้ำ',back:'みず'},{front:'แมว',back:'ねこ'}], progress:0, xp:0 }
 ];
 
-
-    }
-    return JSON.parse(JSON.stringify(PRESET_DECKS));
-  } catch { return JSON.parse(JSON.stringify(PRESET_DECKS)); }
-}
 function saveDecks() {
   // Save all decks (preset with progress, user decks)
   const toSave = decks.map(d => d.preset ? {id:d.id, preset:true, progress:d.progress||0, xp:d.xp||0} : d);
