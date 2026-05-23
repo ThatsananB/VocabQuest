@@ -4,295 +4,143 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>VocabQuest</title>
-
-<!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#58cc02">
-
-<!-- iOS PWA -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="VocabQuest">
 <link rel="apple-touch-icon" href="icon-192.svg">
-
-<!-- Splash background color for iOS -->
-<meta name="msapplication-TileColor" content="#58cc02">
-
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
-
 <style>
-  :root {
-    --green: #58cc02;
-    --green-dark: #46a302;
-    --green-shadow: #3a8500;
-    --blue: #1cb0f6;
-    --blue-dark: #0a95d1;
-    --red: #ff4b4b;
-    --red-dark: #d93636;
-    --yellow: #ffc800;
-    --yellow-dark: #e0a800;
-    --purple: #ce82ff;
-    --orange: #ff9600;
-    --bg: #f7f7f7;
-    --card: #ffffff;
-    --border: #e5e5e5;
-    --text: #3c3c3c;
-    --muted: #afafaf;
-    --streak: #ff9600;
-    --radius: 16px;
-    --shadow: 0 4px 0px;
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-    --safe-top: env(safe-area-inset-top, 0px);
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-  html, body {
-    height: 100%; overflow-x: hidden;
-    font-family: 'Nunito', 'Sarabun', sans-serif;
-    background: var(--bg); color: var(--text);
-  }
-
-  body {
-    display: flex; flex-direction: column; align-items: center;
-    padding-top: var(--safe-top);
-  }
-
-  /* TOP NAV */
-  .top-nav {
-    width: 100%; max-width: 640px;
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 14px 20px;
-    background: white; border-bottom: 2px solid var(--border);
-    position: sticky; top: 0; z-index: 100;
-  }
-  .nav-logo { font-size: 20px; font-weight: 900; color: var(--green); }
-  .nav-logo span { color: var(--blue); }
-  .nav-stats { display: flex; gap: 14px; align-items: center; }
-  .stat-badge { display: flex; align-items: center; gap: 4px; font-weight: 800; font-size: 14px; }
-  .stat-badge.streak { color: var(--streak); }
-  .stat-badge.hearts { color: var(--red); }
-  .stat-badge.xp { color: var(--blue); }
-
-  /* MAIN */
-  .main { width: 100%; max-width: 640px; padding: 18px 14px; padding-bottom: calc(80px + var(--safe-bottom)); flex: 1; overflow-y: auto; }
-
-  /* SCREENS */
-  .screen { display: none; }
-  .screen.active { display: block; animation: fadeIn 0.22s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
-  /* HOME */
-  .home-header {
-    background: linear-gradient(135deg, #58cc02, #23a55a);
-    border-radius: 20px; padding: 26px 22px; color: white;
-    margin-bottom: 22px; position: relative; overflow: hidden;
-  }
-  .home-header::before {
-    content: ''; position: absolute; top: -30px; right: -30px;
-    width: 110px; height: 110px; background: rgba(255,255,255,0.12); border-radius: 50%;
-  }
-  .home-header h1 { font-size: 24px; font-weight: 900; margin-bottom: 4px; }
-  .home-header p { font-size: 13px; opacity: 0.88; font-weight: 600; }
-
-  .section-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; }
-
-  /* DECK CARDS */
-  .deck-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
-  .deck-card {
-    background: white; border: 2px solid var(--border); border-radius: var(--radius);
-    padding: 14px 16px; display: flex; align-items: center; gap: 12px;
-    cursor: pointer; transition: all 0.15s; -webkit-user-select: none;
-  }
-  .deck-card:active { transform: scale(0.98); border-color: var(--green); }
-  .deck-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
-  .deck-info { flex: 1; min-width: 0; }
-  .deck-name { font-size: 15px; font-weight: 800; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .deck-meta { font-size: 11px; color: var(--muted); font-weight: 600; }
-  .deck-progress-bar { height: 5px; background: var(--border); border-radius: 99px; margin-top: 6px; }
-  .deck-progress-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width 0.5s; }
-  .deck-chevron { color: var(--muted); font-size: 18px; }
-
-  .add-deck-btn {
-    border: 2.5px dashed var(--border); background: transparent; border-radius: var(--radius);
-    padding: 14px 16px; display: flex; align-items: center; gap: 10px;
-    cursor: pointer; color: var(--muted); font-family: inherit; font-size: 14px; font-weight: 700;
-    width: 100%; transition: all 0.15s;
-  }
-  .add-deck-btn:active { border-color: var(--green); color: var(--green); }
-
-  /* BUTTONS */
-  .btn { border: none; border-radius: 12px; font-family: inherit; font-weight: 800; cursor: pointer; transition: all 0.1s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-  .btn:active { transform: translateY(2px); }
-  .btn-primary { background: var(--green); color: white; box-shadow: var(--shadow) var(--green-shadow); padding: 14px 28px; font-size: 16px; width: 100%; }
-  .btn-primary:active { box-shadow: none; }
-  .btn-secondary { background: white; color: var(--blue); border: 2px solid var(--border); box-shadow: var(--shadow) var(--border); padding: 12px 20px; font-size: 14px; }
-  .btn-secondary:active { box-shadow: none; }
-  .btn-danger { background: var(--red); color: white; box-shadow: var(--shadow) var(--red-dark); padding: 14px 28px; font-size: 16px; width: 100%; }
-  .btn-danger:active { box-shadow: none; }
-  .btn-sm { padding: 8px 14px; font-size: 13px; }
-
-  /* MODAL */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-end; justify-content: center; }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: white; border-radius: 24px 24px 0 0; padding: 24px 20px;
-    padding-bottom: calc(24px + var(--safe-bottom));
-    width: 100%; max-width: 640px; max-height: 88vh;
-    overflow-y: auto; animation: slideUp 0.28s cubic-bezier(0.32,0.72,0,1);
-  }
-  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 99px; margin: 0 auto 20px; }
-  .modal h2 { font-size: 18px; font-weight: 900; margin-bottom: 4px; }
-  .modal p.modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
-
-  /* FORM */
-  .form-group { margin-bottom: 14px; }
-  .form-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); display: block; margin-bottom: 5px; }
-  .form-input { width: 100%; padding: 11px 13px; border: 2px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 15px; font-weight: 600; color: var(--text); outline: none; -webkit-appearance: none; }
-  .form-input:focus { border-color: var(--blue); }
-
-  .emoji-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-  .emoji-opt { width: 38px; height: 38px; border: 2px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; background: white; }
-  .emoji-opt.selected { border-color: var(--blue); background: rgba(28,176,246,0.08); }
-
-  .word-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
-  .word-item { display: flex; align-items: center; gap: 8px; background: var(--bg); border-radius: 10px; padding: 9px 11px; }
-  .word-item-text { flex: 1; min-width: 0; }
-  .word-item-front { font-weight: 700; font-size: 13px; }
-  .word-item-back { font-size: 11px; color: var(--muted); font-weight: 600; }
-  .word-item-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 6px; }
-
-  .add-word-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 7px; }
-
-  /* GAME */
-  .progress-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-  .back-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--muted); padding: 4px 8px; border-radius: 8px; }
-  .progress-bar-wrap { flex: 1; }
-  .progress-bar-track { height: 13px; background: var(--border); border-radius: 99px; overflow: hidden; }
-  .progress-bar-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1); }
-  .progress-text { font-size: 11px; font-weight: 700; color: var(--muted); text-align: right; margin-top: 3px; }
-  .hearts-row { display: flex; gap: 3px; }
-  .heart-icon { font-size: 20px; transition: all 0.3s; }
-  .heart-icon.lost { filter: grayscale(1); opacity: 0.3; transform: scale(0.85); }
-
-  .round-type { display: inline-block; color: white; font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 99px; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 12px; }
-  .type-mc { background: var(--blue); }
-  .type-type { background: var(--orange); }
-  .type-match { background: var(--purple); }
-
-  .q-label { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; }
-  .q-word { font-size: 34px; font-weight: 900; color: var(--text); margin-bottom: 6px; line-height: 1.1; }
-  .q-hint { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 24px; }
-
-  .options-grid { display: flex; flex-direction: column; gap: 9px; margin-bottom: 16px; }
-  .option-btn {
-    background: white; border: 2px solid var(--border); border-radius: 13px;
-    padding: 14px 16px; font-family: inherit; font-size: 15px; font-weight: 700;
-    color: var(--text); cursor: pointer; text-align: left;
-    box-shadow: 0 3px 0 var(--border); display: flex; align-items: center; gap: 10px;
-    transition: all 0.1s; -webkit-user-select: none;
-  }
-  .option-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
-  .option-btn.selected { border-color: var(--blue); background: rgba(28,176,246,0.1); box-shadow: 0 3px 0 var(--blue-dark); color: var(--blue-dark); }
-  .option-btn.selected .option-letter { background: var(--blue); color: white; }
-  .option-btn.correct { border-color: var(--green); background: #f0fff0; box-shadow: 0 3px 0 var(--green-dark); color: var(--green-dark); }
-  .option-btn.wrong { border-color: var(--red); background: #fff0f0; box-shadow: 0 3px 0 var(--red-dark); color: var(--red-dark); }
-  .option-btn:disabled { cursor: default; }
-  .option-letter { width: 28px; height: 28px; border-radius: 7px; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--muted); flex-shrink: 0; transition: all 0.1s; }
-  .option-btn.correct .option-letter { background: var(--green); color: white; }
-  .option-btn.wrong .option-letter { background: var(--red); color: white; }
-
-  .type-input { width: 100%; padding: 14px; border: 2.5px solid var(--border); border-radius: 13px; font-family: inherit; font-size: 20px; font-weight: 700; color: var(--text); outline: none; text-align: center; margin-bottom: 14px; -webkit-appearance: none; }
-  .type-input:focus { border-color: var(--blue); }
-  .type-input.correct { border-color: var(--green); background: #f0fff0; }
-  .type-input.wrong { border-color: var(--red); background: #fff0f0; }
-
-  .feedback-banner { border-radius: 13px; padding: 14px 16px; margin-bottom: 14px; display: none; align-items: center; gap: 10px; }
-  .feedback-banner.show { display: flex; animation: slideUp2 0.2s ease; }
-  @keyframes slideUp2 { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-  .feedback-banner.correct-banner { background: #e5ffd6; border: 2px solid var(--green); }
-  .feedback-banner.wrong-banner { background: #ffe5e5; border: 2px solid var(--red); }
-  .feedback-icon { font-size: 26px; }
-  .feedback-text h3 { font-size: 15px; font-weight: 800; }
-  .correct-banner h3 { color: var(--green-dark); }
-  .wrong-banner h3 { color: var(--red-dark); }
-  .feedback-text p { font-size: 12px; color: var(--muted); font-weight: 600; }
-
-  /* MATCH */
-  .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-  .match-btn { background: white; border: 2.5px solid var(--border); border-radius: 11px; padding: 13px 8px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.1s; box-shadow: 0 3px 0 var(--border); -webkit-user-select: none; }
-  .match-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
-  .match-btn.selected { border-color: var(--blue); background: rgba(28,176,246,0.08); box-shadow: 0 3px 0 var(--blue-dark); }
-  .match-btn.matched { border-color: var(--green); background: rgba(88,204,2,0.1); color: var(--green-dark); box-shadow: none; opacity: 0.55; }
-  .match-btn.shake { animation: shake 0.4s; }
-  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
-
-  /* CHECK BTN FIXED */
-  .check-btn-wrap {
-    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 100%; max-width: 640px;
-    padding: 14px 14px calc(14px + var(--safe-bottom));
-    background: var(--bg); border-top: 2px solid var(--border);
-    z-index: 80;
-  }
-
-  /* RESULT */
-  .result-card { background: white; border-radius: 22px; padding: 32px 22px; text-align: center; margin-bottom: 20px; }
-  .result-trophy { font-size: 68px; margin-bottom: 14px; animation: bounce 0.6s 0.3s both; }
-  @keyframes bounce { 0%{transform:scale(0) rotate(-10deg)} 60%{transform:scale(1.2) rotate(5deg)} 100%{transform:scale(1) rotate(0)} }
-  .result-title { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
-  .result-sub { font-size: 14px; color: var(--muted); font-weight: 600; margin-bottom: 24px; }
-  .result-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-  .result-stat { background: var(--bg); border-radius: 13px; padding: 14px 10px; text-align: center; }
-  .result-stat-val { font-size: 24px; font-weight: 900; }
-  .result-stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-top: 3px; }
-
-  /* MANAGE */
-  .wm-deck-list { display: flex; flex-direction: column; gap: 9px; }
-  .wm-deck-item { background: white; border: 2px solid var(--border); border-radius: 13px; padding: 13px 14px; display: flex; align-items: center; gap: 10px; }
-  .wm-deck-icon { font-size: 22px; }
-  .wm-deck-info { flex: 1; min-width: 0; }
-  .wm-deck-name { font-weight: 800; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .wm-deck-count { font-size: 11px; color: var(--muted); font-weight: 600; }
-  .wm-actions { display: flex; gap: 6px; }
-  .icon-btn { background: var(--bg); border: none; border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; }
-  .icon-btn:active { background: var(--border); }
-
-  /* TAB BAR */
-  .tab-bar {
-    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 100%; max-width: 640px; background: white; border-top: 2px solid var(--border);
-    display: flex; z-index: 90; padding-bottom: var(--safe-bottom);
-  }
-  .tab-btn { flex: 1; padding: 9px 4px 10px; border: none; background: none; font-family: inherit; font-size: 10px; font-weight: 700; color: var(--muted); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .tab-btn.active { color: var(--green); }
-  .tab-icon { font-size: 21px; }
-
-  /* TOAST */
-  .toast { position: fixed; top: calc(70px + var(--safe-top)); left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 9px 18px; border-radius: 99px; font-size: 13px; font-weight: 700; z-index: 500; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; }
-  .toast.show { opacity: 1; }
-
-  /* INSTALL BANNER */
-  .install-banner { background: linear-gradient(135deg, #1cb0f6, #0a66c2); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 18px; color: white; }
-  .install-banner-text { flex: 1; font-size: 12px; font-weight: 700; line-height: 1.4; }
-  .install-banner-text strong { font-size: 14px; display: block; margin-bottom: 2px; }
-  .install-banner-close { background: rgba(255,255,255,0.2); border: none; border-radius: 8px; color: white; font-size: 16px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
-
-  .divider { height: 1px; background: var(--border); margin: 16px 0; }
-  .flex-row { display: flex; gap: 10px; }
-  .flex-row > * { flex: 1; }
-  .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
-  .empty-state .empty-icon { font-size: 56px; margin-bottom: 14px; }
-  .empty-state h3 { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
-  .empty-state p { font-size: 13px; font-weight: 600; margin-bottom: 16px; }
-
-  .confetti-piece { position: fixed; top: -20px; width: 10px; height: 10px; border-radius: 2px; animation: fall linear forwards; pointer-events: none; z-index: 999; }
-  @keyframes fall { to { top: 110vh; } }
+:root{--green:#58cc02;--green-dark:#46a302;--green-shadow:#3a8500;--blue:#1cb0f6;--blue-dark:#0a95d1;--red:#ff4b4b;--red-dark:#d93636;--yellow:#ffc800;--purple:#ce82ff;--orange:#ff9600;--bg:#f7f7f7;--border:#e5e5e5;--text:#3c3c3c;--muted:#afafaf;--radius:16px;--safe-bottom:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow-x:hidden;font-family:'Nunito','Sarabun',sans-serif;background:var(--bg);color:var(--text)}
+body{display:flex;flex-direction:column;align-items:center;padding-top:var(--safe-top)}
+.top-nav{width:100%;max-width:640px;display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:white;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:100}
+.nav-logo{font-size:20px;font-weight:900;color:var(--green)}.nav-logo span{color:var(--blue)}
+.nav-stats{display:flex;gap:14px;align-items:center}
+.stat-badge{display:flex;align-items:center;gap:4px;font-weight:800;font-size:14px}
+.stat-badge.streak{color:#ff9600}.stat-badge.hearts{color:var(--red)}.stat-badge.xp{color:var(--blue)}
+.main{width:100%;max-width:640px;padding:18px 14px;padding-bottom:calc(80px + var(--safe-bottom));flex:1;overflow-y:auto}
+.screen{display:none}.screen.active{display:block;animation:fadeIn .22s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.home-header{background:linear-gradient(135deg,#58cc02,#23a55a);border-radius:20px;padding:26px 22px;color:white;margin-bottom:22px;position:relative;overflow:hidden}
+.home-header::before{content:'';position:absolute;top:-30px;right:-30px;width:110px;height:110px;background:rgba(255,255,255,.12);border-radius:50%}
+.home-header h1{font-size:24px;font-weight:900;margin-bottom:4px}.home-header p{font-size:13px;opacity:.88;font-weight:600}
+.section-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px}
+.deck-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.deck-card{background:white;border:2px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s;-webkit-user-select:none}
+.deck-card:active{transform:scale(.98);border-color:var(--green)}
+.deck-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.deck-info{flex:1;min-width:0}.deck-name{font-size:15px;font-weight:800;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deck-meta{font-size:11px;color:var(--muted);font-weight:600}
+.deck-progress-bar{height:5px;background:var(--border);border-radius:99px;margin-top:6px}
+.deck-progress-fill{height:100%;border-radius:99px;background:var(--green);transition:width .5s}
+.deck-chevron{color:var(--muted);font-size:18px}
+.add-deck-btn{border:2.5px dashed var(--border);background:transparent;border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--muted);font-family:inherit;font-size:14px;font-weight:700;width:100%;transition:all .15s}
+.add-deck-btn:active{border-color:var(--green);color:var(--green)}
+.btn{border:none;border-radius:12px;font-family:inherit;font-weight:800;cursor:pointer;transition:all .1s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:translateY(2px)}
+.btn-primary{background:var(--green);color:white;box-shadow:0 4px 0 var(--green-shadow);padding:14px 28px;font-size:16px;width:100%}
+.btn-primary:active{box-shadow:none}
+.btn-secondary{background:white;color:var(--blue);border:2px solid var(--border);box-shadow:0 4px 0 var(--border);padding:12px 20px;font-size:14px}
+.btn-secondary:active{box-shadow:none}
+.btn-danger{background:var(--red);color:white;box-shadow:0 4px 0 var(--red-dark);padding:14px 28px;font-size:16px;width:100%}
+.btn-danger:active{box-shadow:none}
+.btn-sm{padding:8px 14px;font-size:13px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:24px 24px 0 0;padding:24px 20px;padding-bottom:calc(24px + var(--safe-bottom));width:100%;max-width:640px;max-height:88vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.32,.72,0,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 20px}
+.modal h2{font-size:18px;font-weight:900;margin-bottom:4px}
+.modal p.modal-sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+.form-group{margin-bottom:14px}
+.form-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);display:block;margin-bottom:5px}
+.form-input{width:100%;padding:11px 13px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:15px;font-weight:600;color:var(--text);outline:none;-webkit-appearance:none}
+.form-input:focus{border-color:var(--blue)}
+.emoji-picker{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.emoji-opt{width:38px;height:38px;border:2px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;background:white}
+.emoji-opt.selected{border-color:var(--blue);background:rgba(28,176,246,.08)}
+.word-list{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.word-item{display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:10px;padding:9px 11px}
+.word-item-text{flex:1;min-width:0}.word-item-front{font-weight:700;font-size:13px}.word-item-back{font-size:11px;color:var(--muted);font-weight:600}
+.word-item-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:6px}
+.add-word-row{display:grid;grid-template-columns:1fr 1fr auto;gap:7px}
+.progress-header{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.back-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:4px 8px;border-radius:8px}
+.progress-bar-wrap{flex:1}.progress-bar-track{height:13px;background:var(--border);border-radius:99px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:99px;background:var(--green);transition:width .4s cubic-bezier(.34,1.56,.64,1)}
+.progress-text{font-size:11px;font-weight:700;color:var(--muted);text-align:right;margin-top:3px}
+.hearts-row{display:flex;gap:3px}.heart-icon{font-size:20px;transition:all .3s}.heart-icon.lost{filter:grayscale(1);opacity:.3;transform:scale(.85)}
+.round-type{display:inline-block;color:white;font-size:10px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+.type-mc{background:var(--blue)}.type-type{background:var(--orange)}.type-match{background:var(--purple)}
+.q-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
+.q-word{font-size:34px;font-weight:900;color:var(--text);margin-bottom:6px;line-height:1.1}
+.q-hint{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:24px}
+.options-grid{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.option-btn{background:white;border:2px solid var(--border);border-radius:13px;padding:14px 16px;font-family:inherit;font-size:15px;font-weight:700;color:var(--text);cursor:pointer;text-align:left;box-shadow:0 3px 0 var(--border);display:flex;align-items:center;gap:10px;transition:all .1s;-webkit-user-select:none}
+.option-btn:active:not(:disabled){transform:translateY(2px);box-shadow:none}
+.option-btn.selected{border-color:var(--blue);background:rgba(28,176,246,.1);box-shadow:0 3px 0 var(--blue-dark);color:var(--blue-dark)}
+.option-btn.selected .option-letter{background:var(--blue);color:white}
+.option-btn.correct{border-color:var(--green);background:#f0fff0;box-shadow:0 3px 0 var(--green-dark);color:var(--green-dark)}
+.option-btn.wrong{border-color:var(--red);background:#fff0f0;box-shadow:0 3px 0 var(--red-dark);color:var(--red-dark)}
+.option-btn:disabled{cursor:default}
+.option-letter{width:28px;height:28px;border-radius:7px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--muted);flex-shrink:0;transition:all .1s}
+.option-btn.correct .option-letter{background:var(--green);color:white}
+.option-btn.wrong .option-letter{background:var(--red);color:white}
+.type-input{width:100%;padding:14px;border:2.5px solid var(--border);border-radius:13px;font-family:inherit;font-size:20px;font-weight:700;color:var(--text);outline:none;text-align:center;margin-bottom:14px;-webkit-appearance:none}
+.type-input:focus{border-color:var(--blue)}.type-input.correct{border-color:var(--green);background:#f0fff0}.type-input.wrong{border-color:var(--red);background:#fff0f0}
+.feedback-banner{border-radius:13px;padding:14px 16px;margin-bottom:14px;display:none;align-items:center;gap:10px}
+.feedback-banner.show{display:flex;animation:fadeIn .2s ease}
+.feedback-banner.correct-banner{background:#e5ffd6;border:2px solid var(--green)}
+.feedback-banner.wrong-banner{background:#ffe5e5;border:2px solid var(--red)}
+.feedback-icon{font-size:26px}.feedback-text h3{font-size:15px;font-weight:800}
+.correct-banner h3{color:var(--green-dark)}.wrong-banner h3{color:var(--red-dark)}
+.feedback-text p{font-size:12px;color:var(--muted);font-weight:600}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.match-btn{background:white;border:2.5px solid var(--border);border-radius:11px;padding:13px 8px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:center;transition:all .1s;box-shadow:0 3px 0 var(--border);-webkit-user-select:none}
+.match-btn:active:not(:disabled){transform:translateY(2px);box-shadow:none}
+.match-btn.selected{border-color:var(--blue);background:rgba(28,176,246,.08);box-shadow:0 3px 0 var(--blue-dark)}
+.match-btn.matched{border-color:var(--green);background:rgba(88,204,2,.1);color:var(--green-dark);box-shadow:none;opacity:.55}
+.match-btn.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.check-btn-wrap{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:640px;padding:14px 14px calc(14px + var(--safe-bottom));background:var(--bg);border-top:2px solid var(--border);z-index:80}
+.result-card{background:white;border-radius:22px;padding:32px 22px;text-align:center;margin-bottom:20px}
+.result-trophy{font-size:68px;margin-bottom:14px;animation:bounce .6s .3s both}
+@keyframes bounce{0%{transform:scale(0) rotate(-10deg)}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
+.result-title{font-size:26px;font-weight:900;margin-bottom:6px}.result-sub{font-size:14px;color:var(--muted);font-weight:600;margin-bottom:24px}
+.result-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.result-stat{background:var(--bg);border-radius:13px;padding:14px 10px;text-align:center}
+.result-stat-val{font-size:24px;font-weight:900}.result-stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-top:3px}
+.wm-deck-list{display:flex;flex-direction:column;gap:9px}
+.wm-deck-item{background:white;border:2px solid var(--border);border-radius:13px;padding:13px 14px;display:flex;align-items:center;gap:10px}
+.wm-deck-icon{font-size:22px}.wm-deck-info{flex:1;min-width:0}
+.wm-deck-name{font-weight:800;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wm-deck-count{font-size:11px;color:var(--muted);font-weight:600}
+.wm-actions{display:flex;gap:6px}
+.icon-btn{background:var(--bg);border:none;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer}
+.icon-btn:active{background:var(--border)}
+.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:640px;background:white;border-top:2px solid var(--border);display:flex;z-index:90;padding-bottom:var(--safe-bottom)}
+.tab-btn{flex:1;padding:9px 4px 10px;border:none;background:none;font-family:inherit;font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;text-transform:uppercase;letter-spacing:.5px}
+.tab-btn.active{color:var(--green)}.tab-icon{font-size:21px}
+.toast{position:fixed;top:calc(70px + var(--safe-top));left:50%;transform:translateX(-50%);background:var(--text);color:white;padding:9px 18px;border-radius:99px;font-size:13px;font-weight:700;z-index:500;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.install-banner{background:linear-gradient(135deg,#1cb0f6,#0a66c2);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:18px;color:white}
+.install-banner-text{flex:1;font-size:12px;font-weight:700;line-height:1.4}
+.install-banner-text strong{font-size:14px;display:block;margin-bottom:2px}
+.install-banner-close{background:rgba(255,255,255,.2);border:none;border-radius:8px;color:white;font-size:16px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.divider{height:1px;background:var(--border);margin:16px 0}
+.flex-row{display:flex;gap:10px}.flex-row>*{flex:1}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-state .empty-icon{font-size:56px;margin-bottom:14px}
+.empty-state h3{font-size:17px;font-weight:800;color:var(--text);margin-bottom:6px}
+.empty-state p{font-size:13px;font-weight:600;margin-bottom:16px}
+.confetti-piece{position:fixed;top:-20px;width:10px;height:10px;border-radius:2px;animation:fall linear forwards;pointer-events:none;z-index:999}
+@keyframes fall{to{top:110vh}}
 </style>
 </head>
 <body>
-
 <nav class="top-nav">
   <div class="nav-logo">Vocab<span>Quest</span> 🦉</div>
   <div class="nav-stats">
@@ -301,73 +149,46 @@
     <div class="stat-badge xp">⭐<span id="navXP">0</span></div>
   </div>
 </nav>
-
 <div class="main">
-
-  <!-- HOME -->
   <div class="screen active" id="homeScreen">
     <div class="install-banner" id="installBanner" style="display:none">
       <span style="font-size:28px">📲</span>
-      <div class="install-banner-text">
-        <strong>เพิ่มเป็นแอปบน iPhone!</strong>
-        กด แชร์ → "เพิ่มไปยังหน้าจอโฮม"
-      </div>
+      <div class="install-banner-text"><strong>เพิ่มเป็นแอปบน iPhone!</strong>กด แชร์ → "เพิ่มไปยังหน้าจอโฮม"</div>
       <button class="install-banner-close" onclick="this.parentElement.style.display='none'">✕</button>
     </div>
-
     <div class="home-header">
       <h1>🦉 VocabQuest</h1>
-      <p>คำศัพท์ TGAT/A-Level 400+ คำ แยกหมวด A-Z พร้อมเพิ่มชุดของคุณเองได้!</p>
+      <p>คำศัพท์ TGAT/A-Level 473 การ์ด แยกหมวด A-Z พร้อมเพิ่มชุดของคุณเองได้!</p>
     </div>
-
     <div class="section-title">ชุดคำศัพท์ของฉัน</div>
     <div class="deck-grid" id="deckGrid"></div>
-    <button class="add-deck-btn" onclick="openAddDeck()">
-      <span style="font-size:20px">➕</span> เพิ่มชุดคำศัพท์ของฉัน
-    </button>
-
+    <button class="add-deck-btn" onclick="openAddDeck()"><span style="font-size:20px">➕</span> เพิ่มชุดคำศัพท์ของฉัน</button>
     <div class="divider"></div>
     <div class="section-title">สถิติวันนี้</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-      <div class="result-stat" style="background:white;border:2px solid var(--border)">
-        <div class="result-stat-val" id="statRounds" style="color:var(--blue)">0</div>
-        <div class="result-stat-label">รอบที่เล่น</div>
-      </div>
-      <div class="result-stat" style="background:white;border:2px solid var(--border)">
-        <div class="result-stat-val" id="statXP" style="color:var(--yellow)">0</div>
-        <div class="result-stat-label">XP รวม</div>
-      </div>
-      <div class="result-stat" style="background:white;border:2px solid var(--border)">
-        <div class="result-stat-val" id="statAcc" style="color:var(--green)">—</div>
-        <div class="result-stat-label">ความแม่น</div>
-      </div>
+      <div class="result-stat" style="background:white;border:2px solid var(--border)"><div class="result-stat-val" id="statRounds" style="color:var(--blue)">0</div><div class="result-stat-label">รอบที่เล่น</div></div>
+      <div class="result-stat" style="background:white;border:2px solid var(--border)"><div class="result-stat-val" id="statXP" style="color:var(--yellow)">0</div><div class="result-stat-label">XP รวม</div></div>
+      <div class="result-stat" style="background:white;border:2px solid var(--border)"><div class="result-stat-val" id="statAcc" style="color:var(--green)">—</div><div class="result-stat-label">ความแม่น</div></div>
     </div>
   </div>
-
-  <!-- GAME -->
   <div class="screen" id="gameScreen">
     <div class="progress-header">
       <button class="back-btn" onclick="goHome()">✕</button>
       <div class="progress-bar-wrap">
         <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
-        <div class="progress-text" id="progressText">0 / 0</div>
+        <div class="progress-text" id="progressText">0/0</div>
       </div>
       <div class="hearts-row" id="heartsRow"></div>
     </div>
     <div id="questionArea"></div>
     <div class="feedback-banner" id="feedbackBanner">
       <div class="feedback-icon" id="feedbackIcon"></div>
-      <div class="feedback-text" id="feedbackText">
-        <h3 id="feedbackTitle"></h3>
-        <p id="feedbackSub"></p>
-      </div>
+      <div class="feedback-text" id="feedbackText"><h3 id="feedbackTitle"></h3><p id="feedbackSub"></p></div>
     </div>
     <div class="check-btn-wrap">
       <button class="btn btn-primary" id="checkBtn" onclick="handleCheck()" disabled>ตรวจคำตอบ</button>
     </div>
   </div>
-
-  <!-- RESULT -->
   <div class="screen" id="resultScreen">
     <div class="result-card">
       <div class="result-trophy" id="resultTrophy">🏆</div>
@@ -383,53 +204,31 @@
     <div style="height:10px"></div>
     <button class="btn btn-secondary" style="width:100%" onclick="goHome()">🏠 กลับหน้าหลัก</button>
   </div>
-
-  <!-- MANAGE -->
   <div class="screen" id="manageScreen">
     <div class="home-header" style="background:linear-gradient(135deg,#1cb0f6,#0a66c2)">
-      <h1>📚 จัดการคำศัพท์</h1>
-      <p>เพิ่ม ลบ หรือแก้ไขชุดคำศัพท์</p>
+      <h1>📚 จัดการคำศัพท์</h1><p>เพิ่ม ลบ หรือแก้ไขชุดคำศัพท์</p>
     </div>
     <div class="section-title">ชุดคำศัพท์ทั้งหมด</div>
     <div class="wm-deck-list" id="wm-deck-list"></div>
     <div style="height:14px"></div>
     <button class="btn btn-primary" style="background:var(--blue);box-shadow:0 4px 0 var(--blue-dark)" onclick="openAddDeck()">➕ สร้างชุดใหม่</button>
   </div>
-
 </div>
-
-<!-- TAB BAR -->
 <div class="tab-bar" id="tabBar">
   <button class="tab-btn active" id="tab-home" onclick="switchTab('home')"><span class="tab-icon">🏠</span>หน้าหลัก</button>
   <button class="tab-btn" id="tab-manage" onclick="switchTab('manage')"><span class="tab-icon">📖</span>คำศัพท์</button>
 </div>
-
-<!-- MODAL ADD/EDIT DECK -->
 <div class="modal-overlay" id="modalDeck">
   <div class="modal">
     <div class="modal-handle"></div>
     <h2 id="deckModalTitle">สร้างชุดคำศัพท์</h2>
     <p class="modal-sub" id="deckModalSub">ตั้งชื่อและเพิ่มคำศัพท์ที่ต้องการเรียน</p>
-
-    <div class="form-group">
-      <label class="form-label">ชื่อชุดคำศัพท์</label>
-      <input class="form-input" id="deckName" placeholder="เช่น คำศัพท์ TOEIC...">
-    </div>
-    <div class="form-group">
-      <label class="form-label">เลือกไอคอน</label>
-      <div class="emoji-picker" id="emojiPicker"></div>
-    </div>
+    <div class="form-group"><label class="form-label">ชื่อชุดคำศัพท์</label><input class="form-input" id="deckName" placeholder="เช่น คำศัพท์ TOEIC..."></div>
+    <div class="form-group"><label class="form-label">เลือกไอคอน</label><div class="emoji-picker" id="emojiPicker"></div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="form-group">
-        <label class="form-label">ภาษาที่แสดง</label>
-        <input class="form-input" id="langFront" placeholder="เช่น ไทย">
-      </div>
-      <div class="form-group">
-        <label class="form-label">ภาษาเป้าหมาย</label>
-        <input class="form-input" id="langBack" placeholder="เช่น English">
-      </div>
+      <div class="form-group"><label class="form-label">ภาษาที่แสดง</label><input class="form-input" id="langFront" placeholder="เช่น ไทย"></div>
+      <div class="form-group"><label class="form-label">ภาษาเป้าหมาย</label><input class="form-input" id="langBack" placeholder="เช่น English"></div>
     </div>
-
     <div class="divider"></div>
     <div class="section-title">คำศัพท์ (<span id="wordCount">0</span> คำ)</div>
     <div class="word-list" id="wordList"></div>
@@ -440,7 +239,6 @@
     </div>
     <div style="height:4px"></div>
     <small style="color:var(--muted);font-size:11px;font-weight:600">กด Enter เพื่อเพิ่มคำศัพท์</small>
-
     <div class="divider"></div>
     <div class="flex-row">
       <button class="btn btn-secondary" onclick="closeDeckModal()">ยกเลิก</button>
@@ -448,58 +246,42 @@
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
-// ===== DATA =====
-const EMOJIS = ['📚','🌍','🎯','🔤','✨','🦊','🐱','🎓','🌸','🍎','🚀','⚡','🎵','🌈','🦋','🏆','🍕','🎮','💡','🌺'];
-let selectedEmoji = '📚';
-let editingDeckId = null;
-let tempWords = [];
+const EMOJIS=['📚','🌍','🎯','🔤','✨','🦊','🐱','🎓','🌸','🍎','🚀','⚡','🎵','🌈','🦋','🏆','🍕','🎮','💡','🌺'];
+let selectedEmoji='📚',editingDeckId=null,tempWords=[];
 
-const SAMPLE_DECKS = [
-  { id:'deck_s1', name:'คำศัพท์อังกฤษพื้นฐาน', icon:'🌍', langFront:'ไทย', langBack:'English',
-    words:[{front:'แมว',back:'cat'},{front:'หมา',back:'dog'},{front:'บ้าน',back:'house'},{front:'น้ำ',back:'water'},{front:'อาหาร',back:'food'},{front:'หนังสือ',back:'book'},{front:'ต้นไม้',back:'tree'},{front:'ท้องฟ้า',back:'sky'}], progress:0, xp:0 },
-  { id:'deck_s2', name:'ภาษาญี่ปุ่นเบื้องต้น', icon:'🌸', langFront:'ไทย', langBack:'日本語',
-    words:[{front:'สวัสดี',back:'こんにちは'},{front:'ขอบคุณ',back:'ありがとう'},{front:'ใช่',back:'はい'},{front:'ไม่',back:'いいえ'},{front:'น้ำ',back:'みず'},{front:'แมว',back:'ねこ'}], progress:0, xp:0 }
-];
+const PRESET_DECKS_DATA=[{"id":"preset_A","name":"หมวด A","icon":"🅰️","langFront":"English","langBack":"ไทย","words":[{"front":"accept (v.)","back":"ยอมรับ"},{"front":"altogether (adv.)","back":"โดยสิ้นเชิง"},{"front":"altar (n.)","back":"แท่นบูชา"},{"front":"alter (v.)","back":"เปลี่ยนแปลง"},{"front":"abandon (v.)","back":"ละทิ้ง"},{"front":"ability (n.)","back":"ความสามารถ"},{"front":"absence (n.)","back":"การไม่อยู่"},{"front":"absolute (adj.)","back":"สมบูรณ์"},{"front":"abstract (adj.)","back":"นามธรรม"},{"front":"abundant (adj.)","back":"มากมาย"},{"front":"access (n.)","back":"การเข้าถึง"},{"front":"access (v.)","back":"เข้าถึง"},{"front":"accident (n.)","back":"อุบัติเหตุ"},{"front":"accomplish (v.)","back":"บรรลุผล"},{"front":"accurate (adj.)","back":"ถูกต้องแม่นยำ"},{"front":"accuse (v.)","back":"กล่าวหา"},{"front":"achieve (v.)","back":"บรรลุ"},{"front":"acknowledge (v.)","back":"ยอมรับ"},{"front":"acquire (v.)","back":"ได้รับ"},{"front":"adapt (v.)","back":"ปรับตัว"},{"front":"adjust (v.)","back":"ปรับเปลี่ยน"},{"front":"admire (v.)","back":"ชื่นชม"},{"front":"admit (v.)","back":"ยอมรับ"},{"front":"adopt (v.)","back":"นำมาใช้"},{"front":"advantage (n.)","back":"ข้อดี"},{"front":"affect (v.)","back":"ส่งผลกระทบ"},{"front":"affordable (adj.)","back":"ที่สามารถจ่ายได้"},{"front":"aggressive (adj.)","back":"ก้าวร้าว"},{"front":"agree (v.)","back":"เห็นด้วย"},{"front":"amaze (v.)","back":"ทำให้ประหลาดใจ"},{"front":"ambition (n.)","back":"ความทะเยอทะยาน"},{"front":"amount (n.)","back":"ปริมาณ"},{"front":"analyze (v.)","back":"วิเคราะห์"},{"front":"ancient (adj.)","back":"โบราณ"},{"front":"announce (v.)","back":"ประกาศ"},{"front":"annual (adj.)","back":"รายปี"},{"front":"anxious (adj.)","back":"กังวล"},{"front":"apologize (v.)","back":"ขอโทษ"},{"front":"apparent (adj.)","back":"ชัดเจน"},{"front":"appeal (v.)","back":"ดึงดูด"},{"front":"appeal (n.)","back":"คำอุทธรณ์"},{"front":"apply (v.)","back":"สมัคร/นำมาใช้"},{"front":"appoint (v.)","back":"แต่งตั้ง"},{"front":"appreciate (v.)","back":"ซาบซึ้ง"},{"front":"approach (v.)","back":"เข้าใกล้"},{"front":"approach (n.)","back":"วิธีการ"},{"front":"appropriate (adj.)","back":"เหมาะสม"},{"front":"approve (v.)","back":"อนุมัติ"},{"front":"argue (v.)","back":"โต้แย้ง"},{"front":"arrange (v.)","back":"จัดเตรียม"},{"front":"arrive (v.)","back":"มาถึง"},{"front":"article (n.)","back":"บทความ"},{"front":"aspect (n.)","back":"แง่มุม"},{"front":"assist (v.)","back":"ช่วยเหลือ"},{"front":"assume (v.)","back":"สันนิษฐาน"},{"front":"attempt (v.)","back":"พยายาม"},{"front":"attempt (n.)","back":"ความพยายาม"},{"front":"attend (v.)","back":"เข้าร่วม"},{"front":"attract (v.)","back":"ดึงดูด"},{"front":"authority (n.)","back":"อำนาจ"},{"front":"available (adj.)","back":"ที่มีอยู่"},{"front":"average (n.)","back":"ค่าเฉลี่ย"},{"front":"average (adj.)","back":"โดยเฉลี่ย"},{"front":"avoid (v.)","back":"หลีกเลี่ยง"},{"front":"aware (adj.)","back":"ตระหนัก"}],"progress":0,"xp":0,"preset":true},{"id":"preset_B","name":"หมวด B","icon":"🐝","langFront":"English","langBack":"ไทย","words":[{"front":"balance (n.)","back":"สมดุล"},{"front":"balance (v.)","back":"ทรงตัว"},{"front":"behavior (n.)","back":"พฤติกรรม"},{"front":"benefit (n.)","back":"ผลประโยชน์"},{"front":"benefit (v.)","back":"เป็นประโยชน์"},{"front":"blame (v.)","back":"ตำหนิ"},{"front":"blame (n.)","back":"ความผิด"},{"front":"borrow (v.)","back":"ยืม"},{"front":"boundary (n.)","back":"ขอบเขต"},{"front":"brilliant (adj.)","back":"ฉลาด/ยอดเยี่ยม"},{"front":"budget (n.)","back":"งบประมาณ"}],"progress":0,"xp":0,"preset":true},{"id":"preset_C","name":"หมวด C","icon":"🌊","langFront":"English","langBack":"ไทย","words":[{"front":"calculate (v.)","back":"คำนวณ"},{"front":"capacity (n.)","back":"ความจุ/ความสามารถ"},{"front":"celebrate (v.)","back":"ฉลอง"},{"front":"challenge (n.)","back":"ความท้าทาย"},{"front":"challenge (v.)","back":"ท้าทาย"},{"front":"character (n.)","back":"บุคลิกภาพ"},{"front":"circumstance (n.)","back":"สถานการณ์"},{"front":"clarify (v.)","back":"ชี้แจง"},{"front":"collapse (v.)","back":"ล้มลง/พัง"},{"front":"collect (v.)","back":"รวบรวม"},{"front":"combine (v.)","back":"รวมกัน"},{"front":"comment (n.)","back":"ความคิดเห็น"},{"front":"comment (v.)","back":"แสดงความคิดเห็น"},{"front":"common (adj.)","back":"ทั่วไป"},{"front":"community (n.)","back":"ชุมชน"},{"front":"compare (v.)","back":"เปรียบเทียบ"},{"front":"complain (v.)","back":"บ่น"},{"front":"complete (v.)","back":"ทำให้เสร็จ"},{"front":"complete (adj.)","back":"สมบูรณ์"},{"front":"complex (adj.)","back":"ซับซ้อน"},{"front":"concentrate (v.)","back":"ตั้งใจ"},{"front":"concern (n.)","back":"ความกังวล"},{"front":"concern (v.)","back":"กังวล"},{"front":"conclude (v.)","back":"สรุป"},{"front":"condition (n.)","back":"เงื่อนไข/สภาพ"},{"front":"confident (adj.)","back":"มั่นใจ"},{"front":"confuse (v.)","back":"ทำให้งง"},{"front":"consequence (n.)","back":"ผลลัพธ์"},{"front":"consider (v.)","back":"พิจารณา"},{"front":"consume (v.)","back":"บริโภค"},{"front":"contact (n.)","back":"การติดต่อ"},{"front":"contact (v.)","back":"ติดต่อ"},{"front":"contain (v.)","back":"บรรจุ"},{"front":"continue (v.)","back":"ดำเนินต่อไป"},{"front":"contribute (v.)","back":"มีส่วนช่วย"},{"front":"convince (v.)","back":"โน้มน้าว"},{"front":"cooperate (v.)","back":"ร่วมมือ"},{"front":"create (v.)","back":"สร้าง"},{"front":"criticize (v.)","back":"วิจารณ์"},{"front":"crucial (adj.)","back":"สำคัญมาก"},{"front":"culture (n.)","back":"วัฒนธรรม"},{"front":"curious (adj.)","back":"อยากรู้อยากเห็น"},{"front":"current (adj.)","back":"ปัจจุบัน"},{"front":"current (n.)","back":"กระแสน้ำ"}],"progress":0,"xp":0,"preset":true},{"id":"preset_D","name":"หมวด D","icon":"🦋","langFront":"English","langBack":"ไทย","words":[{"front":"damage (n.)","back":"ความเสียหาย"},{"front":"damage (v.)","back":"ทำลาย"},{"front":"danger (n.)","back":"อันตราย"},{"front":"deal (n.)","back":"ข้อตกลง"},{"front":"deal (v.)","back":"จัดการ"},{"front":"debate (n.)","back":"การโต้วาที"},{"front":"debate (v.)","back":"ถกเถียง"},{"front":"decade (n.)","back":"ทศวรรษ"},{"front":"decide (v.)","back":"ตัดสินใจ"},{"front":"declare (v.)","back":"ประกาศ"},{"front":"decline (n.)","back":"การลดลง"},{"front":"decline (v.)","back":"ลดลง"},{"front":"decorate (v.)","back":"ตกแต่ง"},{"front":"defeat (n.)","back":"ความพ่ายแพ้"},{"front":"defeat (v.)","back":"เอาชนะ"},{"front":"defend (v.)","back":"ป้องกัน"},{"front":"define (v.)","back":"ให้คำนิยาม"},{"front":"degree (n.)","back":"ระดับ/ปริญญา"},{"front":"delay (n.)","back":"ความล่าช้า"},{"front":"delay (v.)","back":"ล่าช้า"},{"front":"delight (n.)","back":"ความปิติ"},{"front":"delight (v.)","back":"ทำให้ยินดี"},{"front":"deliver (v.)","back":"ส่ง/ถ่ายทอด"},{"front":"demand (n.)","back":"ความต้องการ"},{"front":"demand (v.)","back":"เรียกร้อง"},{"front":"demonstrate (v.)","back":"สาธิต"},{"front":"deny (v.)","back":"ปฏิเสธ"},{"front":"depend (v.)","back":"พึ่งพา"},{"front":"describe (v.)","back":"บรรยาย"},{"front":"deserve (v.)","back":"สมควรได้รับ"},{"front":"design (n.)","back":"แบบแผน"},{"front":"design (v.)","back":"ออกแบบ"},{"front":"desire (n.)","back":"ความปรารถนา"},{"front":"desire (v.)","back":"ปรารถนา"},{"front":"destroy (v.)","back":"ทำลาย"},{"front":"detail (n.)","back":"รายละเอียด"},{"front":"develop (v.)","back":"พัฒนา"},{"front":"device (n.)","back":"อุปกรณ์"},{"front":"devote (v.)","back":"อุทิศ"},{"front":"dialogue (n.)","back":"บทสนทนา"},{"front":"difference (n.)","back":"ความแตกต่าง"},{"front":"difficult (adj.)","back":"ยาก"},{"front":"direct (adj.)","back":"โดยตรง"},{"front":"direct (v.)","back":"กำกับ"},{"front":"disagree (v.)","back":"ไม่เห็นด้วย"},{"front":"disappear (v.)","back":"หายไป"},{"front":"disaster (n.)","back":"ภัยพิบัติ"},{"front":"discipline (n.)","back":"วินัย"},{"front":"discover (v.)","back":"ค้นพบ"},{"front":"discuss (v.)","back":"อภิปราย"},{"front":"disease (n.)","back":"โรค"},{"front":"display (n.)","back":"การแสดงผล"},{"front":"display (v.)","back":"แสดง"},{"front":"distance (n.)","back":"ระยะทาง"},{"front":"distinguish (v.)","back":"แยกแยะ"},{"front":"distribute (v.)","back":"แจกจ่าย"},{"front":"diverse (adj.)","back":"หลากหลาย"},{"front":"divide (v.)","back":"แบ่ง"},{"front":"document (n.)","back":"เอกสาร"},{"front":"document (v.)","back":"บันทึกเป็นหลักฐาน"},{"front":"dominate (v.)","back":"ครอบงำ"},{"front":"doubt (n.)","back":"ความสงสัย"},{"front":"doubt (v.)","back":"สงสัย"},{"front":"drama (n.)","back":"ละคร"}],"progress":0,"xp":0,"preset":true},{"id":"preset_E","name":"หมวด E","icon":"⚡","langFront":"English","langBack":"ไทย","words":[{"front":"earn (v.)","back":"หาเงิน/ได้รับ"},{"front":"economy (n.)","back":"เศรษฐกิจ"},{"front":"educate (v.)","back":"ให้การศึกษา"},{"front":"efficient (adj.)","back":"มีประสิทธิภาพ"},{"front":"effort (n.)","back":"ความพยายาม"},{"front":"eliminate (v.)","back":"กำจัด"},{"front":"embarrass (v.)","back":"ทำให้อับอาย"},{"front":"emotion (n.)","back":"อารมณ์"},{"front":"emphasize (v.)","back":"เน้น"},{"front":"encourage (v.)","back":"ให้กำลังใจ"},{"front":"enemy (n.)","back":"ศัตรู"},{"front":"energy (n.)","back":"พลังงาน"},{"front":"engage (v.)","back":"มีส่วนร่วม"},{"front":"enhance (v.)","back":"ทำให้ดีขึ้น"},{"front":"enormous (adj.)","back":"ใหญ่โต"},{"front":"ensure (v.)","back":"ทำให้มั่นใจ"},{"front":"enter (v.)","back":"เข้า"},{"front":"environment (n.)","back":"สิ่งแวดล้อม"},{"front":"equal (adj.)","back":"เท่าเทียม"},{"front":"error (n.)","back":"ข้อผิดพลาด"},{"front":"escape (v.)","back":"หลบหนี"},{"front":"escape (n.)","back":"การหลบหนี"},{"front":"establish (v.)","back":"ก่อตั้ง"},{"front":"estimate (n.)","back":"ค่าประมาณ"},{"front":"estimate (v.)","back":"ประมาณ"},{"front":"evaluate (v.)","back":"ประเมิน"},{"front":"event (n.)","back":"เหตุการณ์"},{"front":"evidence (n.)","back":"หลักฐาน"},{"front":"evolve (v.)","back":"วิวัฒนาการ"},{"front":"examine (v.)","back":"ตรวจสอบ"},{"front":"example (n.)","back":"ตัวอย่าง"},{"front":"exchange (n.)","back":"การแลกเปลี่ยน"},{"front":"exchange (v.)","back":"แลกเปลี่ยน"},{"front":"exclude (v.)","back":"ตัดออก"},{"front":"excuse (n.)","back":"ข้อแก้ตัว"},{"front":"excuse (v.)","back":"ให้อภัย"},{"front":"exercise (n.)","back":"การออกกำลังกาย"},{"front":"exercise (v.)","back":"ออกกำลังกาย"},{"front":"exhibit (n.)","back":"นิทรรศการ"},{"front":"exhibit (v.)","back":"แสดง"},{"front":"exist (v.)","back":"มีอยู่"},{"front":"expand (v.)","back":"ขยาย"},{"front":"expect (v.)","back":"คาดหวัง"},{"front":"experience (n.)","back":"ประสบการณ์"},{"front":"experience (v.)","back":"ประสบ"},{"front":"experiment (n.)","back":"การทดลอง"},{"front":"experiment (v.)","back":"ทดลอง"},{"front":"expert (n.)","back":"ผู้เชี่ยวชาญ"},{"front":"expert (adj.)","back":"เชี่ยวชาญ"},{"front":"explain (v.)","back":"อธิบาย"},{"front":"explore (v.)","back":"สำรวจ"},{"front":"express (v.)","back":"แสดงออก"},{"front":"extend (v.)","back":"ขยาย/ยืด"},{"front":"extraordinary (adj.)","back":"พิเศษ/ไม่ธรรมดา"},{"front":"extreme (adj.)","back":"สุดขีด"},{"front":"extreme (n.)","back":"ความรุนแรง"}],"progress":0,"xp":0,"preset":true},{"id":"preset_F","name":"หมวด F","icon":"🔥","langFront":"English","langBack":"ไทย","words":[{"front":"factor (n.)","back":"ปัจจัย"},{"front":"fail (v.)","back":"ล้มเหลว"},{"front":"familiar (adj.)","back":"คุ้นเคย"},{"front":"famous (adj.)","back":"มีชื่อเสียง"},{"front":"fear (n.)","back":"ความกลัว"},{"front":"fear (v.)","back":"กลัว"},{"front":"feature (n.)","back":"ลักษณะเด่น"},{"front":"feedback (n.)","back":"ข้อเสนอแนะ"},{"front":"figure (n.)","back":"ตัวเลข/รูปร่าง"},{"front":"final (adj.)","back":"สุดท้าย"},{"front":"finance (n.)","back":"การเงิน"},{"front":"flexible (adj.)","back":"ยืดหยุ่น"},{"front":"focus (n.)","back":"จุดสนใจ"},{"front":"focus (v.)","back":"มุ่งเน้น"},{"front":"force (n.)","back":"กำลัง"},{"front":"force (v.)","back":"บังคับ"},{"front":"foreign (adj.)","back":"ต่างประเทศ"},{"front":"forgive (v.)","back":"ให้อภัย"},{"front":"formal (adj.)","back":"เป็นทางการ"},{"front":"former (adj.)","back":"ก่อนหน้านี้"},{"front":"fortunate (adj.)","back":"โชคดี"},{"front":"frequent (adj.)","back":"บ่อยครั้ง"},{"front":"frustrated (adj.)","back":"หงุดหงิด/ท้อแท้"},{"front":"function (n.)","back":"หน้าที่"},{"front":"function (v.)","back":"ทำหน้าที่"},{"front":"fundamental (adj.)","back":"พื้นฐาน"}],"progress":0,"xp":0,"preset":true},{"id":"preset_G","name":"หมวด G","icon":"🌿","langFront":"English","langBack":"ไทย","words":[{"front":"gain (n.)","back":"ผลประโยชน์"},{"front":"gain (v.)","back":"ได้รับ"},{"front":"gather (v.)","back":"รวบรวม"},{"front":"gender (n.)","back":"เพศ"},{"front":"generate (v.)","back":"ผลิต/สร้าง"},{"front":"generous (adj.)","back":"ใจกว้าง"},{"front":"global (adj.)","back":"ทั่วโลก"},{"front":"goal (n.)","back":"เป้าหมาย"},{"front":"govern (v.)","back":"ปกครอง"},{"front":"gradual (adj.)","back":"ค่อยเป็นค่อยไป"},{"front":"graduate (n.)","back":"บัณฑิต"},{"front":"graduate (v.)","back":"สำเร็จการศึกษา"},{"front":"grant (n.)","back":"ทุน"},{"front":"grant (v.)","back":"ให้"},{"front":"guarantee (n.)","back":"การรับประกัน"},{"front":"guarantee (v.)","back":"รับประกัน"}],"progress":0,"xp":0,"preset":true},{"id":"preset_H","name":"หมวด H","icon":"🏠","langFront":"English","langBack":"ไทย","words":[{"front":"habit (n.)","back":"นิสัย"},{"front":"harm (n.)","back":"อันตราย"},{"front":"harm (v.)","back":"ทำร้าย"},{"front":"harvest (n.)","back":"การเก็บเกี่ยว"},{"front":"harvest (v.)","back":"เก็บเกี่ยว"},{"front":"health (n.)","back":"สุขภาพ"},{"front":"helpful (adj.)","back":"มีประโยชน์"},{"front":"hesitate (v.)","back":"ลังเล"},{"front":"highlight (n.)","back":"จุดเด่น"},{"front":"highlight (v.)","back":"เน้น"},{"front":"historical (adj.)","back":"เกี่ยวกับประวัติศาสตร์"},{"front":"honest (adj.)","back":"ซื่อสัตย์"},{"front":"honor (n.)","back":"เกียรติยศ"},{"front":"honor (v.)","back":"ให้เกียรติ"},{"front":"host (n.)","back":"เจ้าภาพ"},{"front":"host (v.)","back":"เป็นเจ้าภาพ"},{"front":"humble (adj.)","back":"ถ่อมตัว"},{"front":"humor (n.)","back":"อารมณ์ขัน"},{"front":"hurry (n.)","back":"ความรีบ"},{"front":"hurry (v.)","back":"รีบเร่ง"},{"front":"hypothesis (n.)","back":"สมมติฐาน"}],"progress":0,"xp":0,"preset":true},{"id":"preset_I","name":"หมวด I","icon":"💡","langFront":"English","langBack":"ไทย","words":[{"front":"ideal (adj.)","back":"เหมาะสมที่สุด"},{"front":"identify (v.)","back":"ระบุ"},{"front":"identity (n.)","back":"อัตลักษณ์"},{"front":"idle (adj.)","back":"เกียจคร้าน"},{"front":"ignorance (n.)","back":"ความไม่รู้"},{"front":"ignore (v.)","back":"เพิกเฉย"},{"front":"illustrate (v.)","back":"อธิบายด้วยภาพ"},{"front":"image (n.)","back":"ภาพ/ภาพลักษณ์"},{"front":"imitate (v.)","back":"เลียนแบบ"},{"front":"immediate (adj.)","back":"ทันทีทันใด"},{"front":"immense (adj.)","back":"ใหญ่โตมาก"},{"front":"impact (n.)","back":"ผลกระทบ"},{"front":"impact (v.)","back":"ส่งผลกระทบ"},{"front":"impatient (adj.)","back":"ใจร้อน"},{"front":"impede (v.)","back":"ขัดขวาง"},{"front":"implication (n.)","back":"ผลสืบเนื่อง"},{"front":"imply (v.)","back":"บ่งบอก"},{"front":"import (n.)","back":"สินค้านำเข้า"},{"front":"import (v.)","back":"นำเข้า"},{"front":"important (adj.)","back":"สำคัญ"},{"front":"impose (v.)","back":"กำหนด/บังคับใช้"},{"front":"impress (v.)","back":"ประทับใจ"},{"front":"impression (n.)","back":"ความประทับใจ"},{"front":"impressive (adj.)","back":"น่าประทับใจ"},{"front":"improve (v.)","back":"ปรับปรุง"},{"front":"inability (n.)","back":"ความไร้ความสามารถ"},{"front":"inadequate (adj.)","back":"ไม่เพียงพอ"},{"front":"incident (n.)","back":"เหตุการณ์"},{"front":"include (v.)","back":"รวม"},{"front":"income (n.)","back":"รายได้"},{"front":"incredible (adj.)","back":"เหลือเชื่อ"},{"front":"independent (adj.)","back":"เป็นอิสระ"},{"front":"indicate (v.)","back":"แสดง/ชี้ให้เห็น"},{"front":"individual (n.)","back":"บุคคล"},{"front":"industry (n.)","back":"อุตสาหกรรม"},{"front":"inevitable (adj.)","back":"หลีกเลี่ยงไม่ได้"},{"front":"infect (v.)","back":"ทำให้ติดเชื้อ"},{"front":"infection (n.)","back":"การติดเชื้อ"},{"front":"influence (n.)","back":"อิทธิพล"},{"front":"influence (v.)","back":"มีอิทธิพล"},{"front":"inform (v.)","back":"แจ้ง"},{"front":"initiative (n.)","back":"ความคิดริเริ่ม"},{"front":"innovate (v.)","back":"สร้างสรรค์นวัตกรรม"},{"front":"inspire (v.)","back":"สร้างแรงบันดาลใจ"},{"front":"interpret (v.)","back":"ตีความ"},{"front":"investigate (v.)","back":"สืบสวน"},{"front":"involve (v.)","back":"เกี่ยวข้อง"},{"front":"issue (n.)","back":"ประเด็น/ปัญหา"}],"progress":0,"xp":0,"preset":true},{"id":"preset_J","name":"หมวด J","icon":"💎","langFront":"English","langBack":"ไทย","words":[{"front":"jealous (adj.)","back":"อิจฉา"},{"front":"justice (n.)","back":"ความยุติธรรม"}],"progress":0,"xp":0,"preset":true},{"id":"preset_K","name":"หมวด K","icon":"🔑","langFront":"English","langBack":"ไทย","words":[{"front":"keen (adj.)","back":"กระตือรือร้น"},{"front":"knowledge (n.)","back":"ความรู้"}],"progress":0,"xp":0,"preset":true},{"id":"preset_L","name":"หมวด L","icon":"🦁","langFront":"English","langBack":"ไทย","words":[{"front":"lack (v.)","back":"ขาด"},{"front":"lack (n.)","back":"ความขาดแคลน"},{"front":"launch (v.)","back":"เปิดตัว"},{"front":"launch (n.)","back":"การเปิดตัว"},{"front":"leadership (n.)","back":"ความเป็นผู้นำ"},{"front":"legal (adj.)","back":"ถูกกฎหมาย"},{"front":"limit (v.)","back":"จำกัด"},{"front":"limit (n.)","back":"ขีดจำกัด"},{"front":"logical (adj.)","back":"สมเหตุสมผล"},{"front":"loyal (adj.)","back":"ซื่อสัตย์/จงรักภักดี"}],"progress":0,"xp":0,"preset":true},{"id":"preset_M","name":"หมวด M","icon":"🌙","langFront":"English","langBack":"ไทย","words":[{"front":"maintain (v.)","back":"รักษา"},{"front":"manage (v.)","back":"จัดการ"},{"front":"maximum (n.)","back":"สูงสุด"},{"front":"measure (v.)","back":"วัด"},{"front":"measure (n.)","back":"การวัด"},{"front":"method (n.)","back":"วิธีการ"},{"front":"minimum (n.)","back":"ต่ำสุด"},{"front":"modify (v.)","back":"แก้ไข"},{"front":"motivate (v.)","back":"จูงใจ"}],"progress":0,"xp":0,"preset":true},{"id":"preset_N","name":"หมวด N","icon":"🌟","langFront":"English","langBack":"ไทย","words":[{"front":"natural (adj.)","back":"ธรรมชาติ"},{"front":"necessary (adj.)","back":"จำเป็น"},{"front":"negotiate (v.)","back":"เจรจา"},{"front":"neutral (adj.)","back":"เป็นกลาง"}],"progress":0,"xp":0,"preset":true},{"id":"preset_O","name":"หมวด O","icon":"🎯","langFront":"English","langBack":"ไทย","words":[{"front":"objective (n.)","back":"เป้าหมาย"},{"front":"objective (adj.)","back":"เป็นกลาง"},{"front":"observe (v.)","back":"สังเกต"},{"front":"obtain (v.)","back":"ได้รับ"},{"front":"obvious (adj.)","back":"ชัดเจน"},{"front":"operate (v.)","back":"ดำเนินการ"},{"front":"opportunity (n.)","back":"โอกาส"},{"front":"organize (v.)","back":"จัดระเบียบ"},{"front":"outcome (n.)","back":"ผลลัพธ์"}],"progress":0,"xp":0,"preset":true},{"id":"preset_P","name":"หมวด P","icon":"🌸","langFront":"English","langBack":"ไทย","words":[{"front":"participate (v.)","back":"เข้าร่วม"},{"front":"pattern (n.)","back":"รูปแบบ"},{"front":"perceive (v.)","back":"รับรู้"},{"front":"perform (v.)","back":"แสดง/ปฏิบัติ"},{"front":"permit (v.)","back":"อนุญาต"},{"front":"permit (n.)","back":"ใบอนุญาต"},{"front":"perspective (n.)","back":"มุมมอง"},{"front":"positive (adj.)","back":"เชิงบวก"},{"front":"potential (n.)","back":"ศักยภาพ"},{"front":"potential (adj.)","back":"ที่อาจเป็นไปได้"},{"front":"predict (v.)","back":"ทำนาย"},{"front":"prepare (v.)","back":"เตรียม"},{"front":"preserve (v.)","back":"อนุรักษ์"},{"front":"prevent (v.)","back":"ป้องกัน"},{"front":"primary (adj.)","back":"หลัก/สำคัญ"},{"front":"principle (n.)","back":"หลักการ"},{"front":"process (n.)","back":"กระบวนการ"},{"front":"process (v.)","back":"ประมวลผล"},{"front":"produce (v.)","back":"ผลิต"},{"front":"professional (adj.)","back":"มืออาชีพ"},{"front":"professional (n.)","back":"ผู้เชี่ยวชาญ"},{"front":"progress (n.)","back":"ความก้าวหน้า"},{"front":"progress (v.)","back":"ก้าวหน้า"},{"front":"promote (v.)","back":"ส่งเสริม"},{"front":"protect (v.)","back":"ปกป้อง"},{"front":"provide (v.)","back":"จัดหา"},{"front":"publish (v.)","back":"เผยแพร่"},{"front":"pursue (v.)","back":"ติดตาม/มุ่งหมาย"}],"progress":0,"xp":0,"preset":true},{"id":"preset_Q","name":"หมวด Q","icon":"👑","langFront":"English","langBack":"ไทย","words":[{"front":"qualify (v.)","back":"มีคุณสมบัติ"},{"front":"quantity (n.)","back":"ปริมาณ"}],"progress":0,"xp":0,"preset":true},{"id":"preset_R","name":"หมวด R","icon":"🌈","langFront":"English","langBack":"ไทย","words":[{"front":"realize (v.)","back":"ตระหนัก/รู้"},{"front":"recognize (v.)","back":"จดจำ/ยอมรับ"},{"front":"reduce (v.)","back":"ลด"},{"front":"reflect (v.)","back":"สะท้อน"},{"front":"reform (v.)","back":"ปฏิรูป"},{"front":"reform (n.)","back":"การปฏิรูป"},{"front":"refuse (v.)","back":"ปฏิเสธ"},{"front":"relate (v.)","back":"เกี่ยวข้อง"},{"front":"relevant (adj.)","back":"เกี่ยวข้อง"},{"front":"replace (v.)","back":"แทนที่"},{"front":"require (v.)","back":"ต้องการ"},{"front":"research (v.)","back":"วิจัย"},{"front":"research (n.)","back":"การวิจัย"},{"front":"resolve (v.)","back":"แก้ไข"},{"front":"respond (v.)","back":"ตอบสนอง"},{"front":"responsible (adj.)","back":"รับผิดชอบ"},{"front":"restore (v.)","back":"ฟื้นฟู"},{"front":"reveal (v.)","back":"เปิดเผย"}],"progress":0,"xp":0,"preset":true},{"id":"preset_S","name":"หมวด S","icon":"⭐","langFront":"English","langBack":"ไทย","words":[{"front":"significant (adj.)","back":"สำคัญ"},{"front":"similar (adj.)","back":"คล้ายคลึง"},{"front":"simulate (v.)","back":"จำลอง"},{"front":"solve (v.)","back":"แก้ปัญหา"},{"front":"specific (adj.)","back":"เฉพาะเจาะจง"},{"front":"strategy (n.)","back":"กลยุทธ์"},{"front":"succeed (v.)","back":"ประสบความสำเร็จ"},{"front":"suggest (v.)","back":"แนะนำ"},{"front":"support (v.)","back":"สนับสนุน"},{"front":"support (n.)","back":"การสนับสนุน"},{"front":"survive (v.)","back":"รอดชีวิต"},{"front":"sustainable (adj.)","back":"ยั่งยืน"},{"front":"symbol (n.)","back":"สัญลักษณ์"}],"progress":0,"xp":0,"preset":true},{"id":"preset_T","name":"หมวด T","icon":"🌳","langFront":"English","langBack":"ไทย","words":[{"front":"technology (n.)","back":"เทคโนโลยี"},{"front":"theory (n.)","back":"ทฤษฎี"},{"front":"tradition (n.)","back":"ประเพณี"},{"front":"transform (v.)","back":"เปลี่ยนแปลง"},{"front":"trust (v.)","back":"ไว้วางใจ"},{"front":"trust (n.)","back":"ความไว้วางใจ"}],"progress":0,"xp":0,"preset":true},{"id":"preset_U","name":"หมวด U","icon":"☂️","langFront":"English","langBack":"ไทย","words":[{"front":"unique (adj.)","back":"เป็นเอกลักษณ์"},{"front":"unite (v.)","back":"รวมกัน"},{"front":"update (v.)","back":"อัปเดต"},{"front":"update (n.)","back":"การอัปเดต"},{"front":"useful (adj.)","back":"มีประโยชน์"}],"progress":0,"xp":0,"preset":true},{"id":"preset_V","name":"หมวด V","icon":"🎯","langFront":"English","langBack":"ไทย","words":[{"front":"value (n.)","back":"คุณค่า"},{"front":"value (v.)","back":"ให้คุณค่า"},{"front":"various (adj.)","back":"หลากหลาย"},{"front":"vision (n.)","back":"วิสัยทัศน์"},{"front":"volunteer (n.)","back":"อาสาสมัคร"},{"front":"volunteer (v.)","back":"อาสา"}],"progress":0,"xp":0,"preset":true},{"id":"preset_W","name":"หมวด W","icon":"🌊","langFront":"English","langBack":"ไทย","words":[{"front":"wealth (n.)","back":"ความมั่งคั่ง"},{"front":"willing (adj.)","back":"เต็มใจ"},{"front":"wisdom (n.)","back":"ความฉลาด"},{"front":"worry (v.)","back":"กังวล"},{"front":"worry (n.)","back":"ความกังวล"}],"progress":0,"xp":0,"preset":true},{"id":"preset_Y","name":"หมวด Y","icon":"🌻","langFront":"English","langBack":"ไทย","words":[{"front":"yield (v.)","back":"ให้ผล"},{"front":"yield (n.)","back":"ผลผลิต"}],"progress":0,"xp":0,"preset":true},{"id":"preset_Z","name":"หมวด Z","icon":"⚡","langFront":"English","langBack":"ไทย","words":[{"front":"zeal (n.)","back":"ความกระตือรือร้น"}],"progress":0,"xp":0,"preset":true}];
 
-function saveDecks() {
-  // Save all decks (preset with progress, user decks)
-  const toSave = decks.map(d => d.preset ? {id:d.id, preset:true, progress:d.progress||0, xp:d.xp||0} : d);
-  localStorage.setItem('vq_decks', JSON.stringify(toSave));
-}
-function loadStats() { try{return JSON.parse(localStorage.getItem('vq_stats')||'{"xp":0,"streak":0,"rounds":0,"correct":0,"total":0}');}catch{return{xp:0,streak:0,rounds:0,correct:0,total:0};} }
-function saveStats() { localStorage.setItem('vq_stats',JSON.stringify(stats)); }
-
-const PRESET_DECKS_DATA = [{"id":"preset_A","name":"หมวด A","icon":"🅰️","langFront":"English","langBack":"ไทย","words":[{"front":"accept (v.)","back":"ยอมรับ"},{"front":"altogether (adv.)","back":"โดยสิ้นเชิง"},{"front":"altar (n.)","back":"แท่นบูชา"},{"front":"alter (v.)","back":"เปลี่ยนแปลง"},{"front":"abandon (v.)","back":"ละทิ้ง"},{"front":"ability (n.)","back":"ความสามารถ"},{"front":"absence (n.)","back":"การไม่อยู่"},{"front":"absolute (adj.)","back":"สมบูรณ์"},{"front":"abstract (adj.)","back":"นามธรรม"},{"front":"abundant (adj.)","back":"มากมาย"},{"front":"access (n.)","back":"การเข้าถึง"},{"front":"access (v.)","back":"เข้าถึง"},{"front":"accident (n.)","back":"อุบัติเหตุ"},{"front":"accomplish (v.)","back":"บรรลุผล"},{"front":"accurate (adj.)","back":"ถูกต้องแม่นยำ"},{"front":"accuse (v.)","back":"กล่าวหา"},{"front":"achieve (v.)","back":"บรรลุ"},{"front":"acknowledge (v.)","back":"ยอมรับ"},{"front":"acquire (v.)","back":"ได้รับ"},{"front":"adapt (v.)","back":"ปรับตัว"},{"front":"adjust (v.)","back":"ปรับเปลี่ยน"},{"front":"admire (v.)","back":"ชื่นชม"},{"front":"admit (v.)","back":"ยอมรับ"},{"front":"adopt (v.)","back":"นำมาใช้"},{"front":"advantage (n.)","back":"ข้อดี"},{"front":"affect (v.)","back":"ส่งผลกระทบ"},{"front":"affordable (adj.)","back":"ที่สามารถจ่ายได้"},{"front":"aggressive (adj.)","back":"ก้าวร้าว"},{"front":"agree (v.)","back":"เห็นด้วย"},{"front":"amaze (v.)","back":"ทำให้ประหลาดใจ"},{"front":"ambition (n.)","back":"ความทะเยอทะยาน"},{"front":"amount (n.)","back":"ปริมาณ"},{"front":"analyze (v.)","back":"วิเคราะห์"},{"front":"ancient (adj.)","back":"โบราณ"},{"front":"announce (v.)","back":"ประกาศ"},{"front":"annual (adj.)","back":"รายปี"},{"front":"anxious (adj.)","back":"กังวล"},{"front":"apologize (v.)","back":"ขอโทษ"},{"front":"apparent (adj.)","back":"ชัดเจน"},{"front":"appeal (v.)","back":"ดึงดูด"},{"front":"appeal (n.)","back":"คำอุทธรณ์"},{"front":"apply (v.)","back":"สมัคร/นำมาใช้"},{"front":"appoint (v.)","back":"แต่งตั้ง"},{"front":"appreciate (v.)","back":"ซาบซึ้ง"},{"front":"approach (v.)","back":"เข้าใกล้"},{"front":"approach (n.)","back":"วิธีการ"},{"front":"appropriate (adj.)","back":"เหมาะสม"},{"front":"approve (v.)","back":"อนุมัติ"},{"front":"argue (v.)","back":"โต้แย้ง"},{"front":"arrange (v.)","back":"จัดเตรียม"},{"front":"arrive (v.)","back":"มาถึง"},{"front":"article (n.)","back":"บทความ"},{"front":"aspect (n.)","back":"แง่มุม"},{"front":"assist (v.)","back":"ช่วยเหลือ"},{"front":"assume (v.)","back":"สันนิษฐาน"},{"front":"attempt (v.)","back":"พยายาม"},{"front":"attempt (n.)","back":"ความพยายาม"},{"front":"attend (v.)","back":"เข้าร่วม"},{"front":"attract (v.)","back":"ดึงดูด"},{"front":"authority (n.)","back":"อำนาจ"},{"front":"available (adj.)","back":"ที่มีอยู่"},{"front":"average (n.)","back":"ค่าเฉลี่ย"},{"front":"average (adj.)","back":"โดยเฉลี่ย"},{"front":"avoid (v.)","back":"หลีกเลี่ยง"},{"front":"aware (adj.)","back":"ตระหนัก"}],"progress":0,"xp":0,"preset":true},{"id":"preset_B","name":"หมวด B","icon":"🐝","langFront":"English","langBack":"ไทย","words":[{"front":"balance (n.)","back":"สมดุล"},{"front":"balance (v.)","back":"ทรงตัว"},{"front":"behavior (n.)","back":"พฤติกรรม"},{"front":"benefit (n.)","back":"ผลประโยชน์"},{"front":"benefit (v.)","back":"เป็นประโยชน์"},{"front":"blame (v.)","back":"ตำหนิ"},{"front":"blame (n.)","back":"ความผิด"},{"front":"borrow (v.)","back":"ยืม"},{"front":"boundary (n.)","back":"ขอบเขต"},{"front":"brilliant (adj.)","back":"ฉลาด/ยอดเยี่ยม"},{"front":"budget (n.)","back":"งบประมาณ"}],"progress":0,"xp":0,"preset":true},{"id":"preset_C","name":"หมวด C","icon":"🌊","langFront":"English","langBack":"ไทย","words":[{"front":"calculate (v.)","back":"คำนวณ"},{"front":"capacity (n.)","back":"ความจุ/ความสามารถ"},{"front":"celebrate (v.)","back":"ฉลอง"},{"front":"challenge (n.)","back":"ความท้าทาย"},{"front":"challenge (v.)","back":"ท้าทาย"},{"front":"character (n.)","back":"บุคลิกภาพ"},{"front":"circumstance (n.)","back":"สถานการณ์"},{"front":"clarify (v.)","back":"ชี้แจง"},{"front":"collapse (v.)","back":"ล้มลง/พัง"},{"front":"collect (v.)","back":"รวบรวม"},{"front":"combine (v.)","back":"รวมกัน"},{"front":"comment (n.)","back":"ความคิดเห็น"},{"front":"comment (v.)","back":"แสดงความคิดเห็น"},{"front":"common (adj.)","back":"ทั่วไป"},{"front":"community (n.)","back":"ชุมชน"},{"front":"compare (v.)","back":"เปรียบเทียบ"},{"front":"complain (v.)","back":"บ่น"},{"front":"complete (v.)","back":"ทำให้เสร็จ"},{"front":"complete (adj.)","back":"สมบูรณ์"},{"front":"complex (adj.)","back":"ซับซ้อน"},{"front":"concentrate (v.)","back":"ตั้งใจ"},{"front":"concern (n.)","back":"ความกังวล"},{"front":"concern (v.)","back":"กังวล"},{"front":"conclude (v.)","back":"สรุป"},{"front":"condition (n.)","back":"เงื่อนไข/สภาพ"},{"front":"confident (adj.)","back":"มั่นใจ"},{"front":"confuse (v.)","back":"ทำให้งง"},{"front":"consequence (n.)","back":"ผลลัพธ์"},{"front":"consider (v.)","back":"พิจารณา"},{"front":"consume (v.)","back":"บริโภค"},{"front":"contact (n.)","back":"การติดต่อ"},{"front":"contact (v.)","back":"ติดต่อ"},{"front":"contain (v.)","back":"บรรจุ"},{"front":"continue (v.)","back":"ดำเนินต่อไป"},{"front":"contribute (v.)","back":"มีส่วนช่วย"},{"front":"convince (v.)","back":"โน้มน้าว"},{"front":"cooperate (v.)","back":"ร่วมมือ"},{"front":"create (v.)","back":"สร้าง"},{"front":"criticize (v.)","back":"วิจารณ์"},{"front":"crucial (adj.)","back":"สำคัญมาก"},{"front":"culture (n.)","back":"วัฒนธรรม"},{"front":"curious (adj.)","back":"อยากรู้อยากเห็น"},{"front":"current (adj.)","back":"ปัจจุบัน"},{"front":"current (n.)","back":"กระแสน้ำ"}],"progress":0,"xp":0,"preset":true},{"id":"preset_D","name":"หมวด D","icon":"🦋","langFront":"English","langBack":"ไทย","words":[{"front":"damage (n.)","back":"ความเสียหาย"},{"front":"damage (v.)","back":"ทำลาย"},{"front":"danger (n.)","back":"อันตราย"},{"front":"deal (n.)","back":"ข้อตกลง"},{"front":"deal (v.)","back":"จัดการ"},{"front":"debate (n.)","back":"การโต้วาที"},{"front":"debate (v.)","back":"ถกเถียง"},{"front":"decade (n.)","back":"ทศวรรษ"},{"front":"decide (v.)","back":"ตัดสินใจ"},{"front":"declare (v.)","back":"ประกาศ"},{"front":"decline (n.)","back":"การลดลง"},{"front":"decline (v.)","back":"ลดลง"},{"front":"decorate (v.)","back":"ตกแต่ง"},{"front":"defeat (n.)","back":"ความพ่ายแพ้"},{"front":"defeat (v.)","back":"เอาชนะ"},{"front":"defend (v.)","back":"ป้องกัน"},{"front":"define (v.)","back":"ให้คำนิยาม"},{"front":"degree (n.)","back":"ระดับ/ปริญญา"},{"front":"delay (n.)","back":"ความล่าช้า"},{"front":"delay (v.)","back":"ล่าช้า"},{"front":"delight (n.)","back":"ความปิติ"},{"front":"delight (v.)","back":"ทำให้ยินดี"},{"front":"deliver (v.)","back":"ส่ง/ถ่ายทอด"},{"front":"demand (n.)","back":"ความต้องการ"},{"front":"demand (v.)","back":"เรียกร้อง"},{"front":"demonstrate (v.)","back":"สาธิต"},{"front":"deny (v.)","back":"ปฏิเสธ"},{"front":"depend (v.)","back":"พึ่งพา"},{"front":"describe (v.)","back":"บรรยาย"},{"front":"deserve (v.)","back":"สมควรได้รับ"},{"front":"design (n.)","back":"แบบแผน"},{"front":"design (v.)","back":"ออกแบบ"},{"front":"desire (n.)","back":"ความปรารถนา"},{"front":"desire (v.)","back":"ปรารถนา"},{"front":"destroy (v.)","back":"ทำลาย"},{"front":"detail (n.)","back":"รายละเอียด"},{"front":"develop (v.)","back":"พัฒนา"},{"front":"device (n.)","back":"อุปกรณ์"},{"front":"devote (v.)","back":"อุทิศ"},{"front":"dialogue (n.)","back":"บทสนทนา"},{"front":"difference (n.)","back":"ความแตกต่าง"},{"front":"difficult (adj.)","back":"ยาก"},{"front":"direct (adj.)","back":"โดยตรง"},{"front":"direct (v.)","back":"กำกับ"},{"front":"disagree (v.)","back":"ไม่เห็นด้วย"},{"front":"disappear (v.)","back":"หายไป"},{"front":"disaster (n.)","back":"ภัยพิบัติ"},{"front":"discipline (n.)","back":"วินัย"},{"front":"discover (v.)","back":"ค้นพบ"},{"front":"discuss (v.)","back":"อภิปราย"},{"front":"disease (n.)","back":"โรค"},{"front":"display (n.)","back":"การแสดงผล"},{"front":"display (v.)","back":"แสดง"},{"front":"distance (n.)","back":"ระยะทาง"},{"front":"distinguish (v.)","back":"แยกแยะ"},{"front":"distribute (v.)","back":"แจกจ่าย"},{"front":"diverse (adj.)","back":"หลากหลาย"},{"front":"divide (v.)","back":"แบ่ง"},{"front":"document (n.)","back":"เอกสาร"},{"front":"document (v.)","back":"บันทึกเป็นหลักฐาน"},{"front":"dominate (v.)","back":"ครอบงำ"},{"front":"doubt (n.)","back":"ความสงสัย"},{"front":"doubt (v.)","back":"สงสัย"},{"front":"drama (n.)","back":"ละคร"}],"progress":0,"xp":0,"preset":true},{"id":"preset_E","name":"หมวด E","icon":"⚡","langFront":"English","langBack":"ไทย","words":[{"front":"earn (v.)","back":"หาเงิน/ได้รับ"},{"front":"economy (n.)","back":"เศรษฐกิจ"},{"front":"educate (v.)","back":"ให้การศึกษา"},{"front":"efficient (adj.)","back":"มีประสิทธิภาพ"},{"front":"effort (n.)","back":"ความพยายาม"},{"front":"eliminate (v.)","back":"กำจัด"},{"front":"embarrass (v.)","back":"ทำให้อับอาย"},{"front":"emotion (n.)","back":"อารมณ์"},{"front":"emphasize (v.)","back":"เน้น"},{"front":"encourage (v.)","back":"ให้กำลังใจ"},{"front":"enemy (n.)","back":"ศัตรู"},{"front":"energy (n.)","back":"พลังงาน"},{"front":"engage (v.)","back":"มีส่วนร่วม"},{"front":"enhance (v.)","back":"ทำให้ดีขึ้น"},{"front":"enormous (adj.)","back":"ใหญ่โต"},{"front":"ensure (v.)","back":"ทำให้มั่นใจ"},{"front":"enter (v.)","back":"เข้า"},{"front":"environment (n.)","back":"สิ่งแวดล้อม"},{"front":"equal (adj.)","back":"เท่าเทียม"},{"front":"error (n.)","back":"ข้อผิดพลาด"},{"front":"escape (v.)","back":"หลบหนี"},{"front":"escape (n.)","back":"การหลบหนี"},{"front":"establish (v.)","back":"ก่อตั้ง"},{"front":"estimate (n.)","back":"ค่าประมาณ"},{"front":"estimate (v.)","back":"ประมาณ"},{"front":"evaluate (v.)","back":"ประเมิน"},{"front":"event (n.)","back":"เหตุการณ์"},{"front":"evidence (n.)","back":"หลักฐาน"},{"front":"evolve (v.)","back":"วิวัฒนาการ"},{"front":"examine (v.)","back":"ตรวจสอบ"},{"front":"example (n.)","back":"ตัวอย่าง"},{"front":"exchange (n.)","back":"การแลกเปลี่ยน"},{"front":"exchange (v.)","back":"แลกเปลี่ยน"},{"front":"exclude (v.)","back":"ตัดออก"},{"front":"excuse (n.)","back":"ข้อแก้ตัว"},{"front":"excuse (v.)","back":"ให้อภัย"},{"front":"exercise (n.)","back":"การออกกำลังกาย"},{"front":"exercise (v.)","back":"ออกกำลังกาย"},{"front":"exhibit (n.)","back":"นิทรรศการ"},{"front":"exhibit (v.)","back":"แสดง"},{"front":"exist (v.)","back":"มีอยู่"},{"front":"expand (v.)","back":"ขยาย"},{"front":"expect (v.)","back":"คาดหวัง"},{"front":"experience (n.)","back":"ประสบการณ์"},{"front":"experience (v.)","back":"ประสบ"},{"front":"experiment (n.)","back":"การทดลอง"},{"front":"experiment (v.)","back":"ทดลอง"},{"front":"expert (n.)","back":"ผู้เชี่ยวชาญ"},{"front":"expert (adj.)","back":"เชี่ยวชาญ"},{"front":"explain (v.)","back":"อธิบาย"},{"front":"explore (v.)","back":"สำรวจ"},{"front":"express (v.)","back":"แสดงออก"},{"front":"extend (v.)","back":"ขยาย/ยืด"},{"front":"extraordinary (adj.)","back":"พิเศษ/ไม่ธรรมดา"},{"front":"extreme (adj.)","back":"สุดขีด"},{"front":"extreme (n.)","back":"ความรุนแรง"}],"progress":0,"xp":0,"preset":true},{"id":"preset_F","name":"หมวด F","icon":"🔥","langFront":"English","langBack":"ไทย","words":[{"front":"factor (n.)","back":"ปัจจัย"},{"front":"fail (v.)","back":"ล้มเหลว"},{"front":"familiar (adj.)","back":"คุ้นเคย"},{"front":"famous (adj.)","back":"มีชื่อเสียง"},{"front":"fear (n.)","back":"ความกลัว"},{"front":"fear (v.)","back":"กลัว"},{"front":"feature (n.)","back":"ลักษณะเด่น"},{"front":"feedback (n.)","back":"ข้อเสนอแนะ"},{"front":"figure (n.)","back":"ตัวเลข/รูปร่าง"},{"front":"final (adj.)","back":"สุดท้าย"},{"front":"finance (n.)","back":"การเงิน"},{"front":"flexible (adj.)","back":"ยืดหยุ่น"},{"front":"focus (n.)","back":"จุดสนใจ"},{"front":"focus (v.)","back":"มุ่งเน้น"},{"front":"force (n.)","back":"กำลัง"},{"front":"force (v.)","back":"บังคับ"},{"front":"foreign (adj.)","back":"ต่างประเทศ"},{"front":"forgive (v.)","back":"ให้อภัย"},{"front":"formal (adj.)","back":"เป็นทางการ"},{"front":"former (adj.)","back":"ก่อนหน้านี้"},{"front":"fortunate (adj.)","back":"โชคดี"},{"front":"frequent (adj.)","back":"บ่อยครั้ง"},{"front":"frustrated (adj.)","back":"หงุดหงิด/ท้อแท้"},{"front":"function (n.)","back":"หน้าที่"},{"front":"function (v.)","back":"ทำหน้าที่"},{"front":"fundamental (adj.)","back":"พื้นฐาน"}],"progress":0,"xp":0,"preset":true},{"id":"preset_G","name":"หมวด G","icon":"🌿","langFront":"English","langBack":"ไทย","words":[{"front":"gain (n.)","back":"ผลประโยชน์"},{"front":"gain (v.)","back":"ได้รับ"},{"front":"gather (v.)","back":"รวบรวม"},{"front":"gender (n.)","back":"เพศ"},{"front":"generate (v.)","back":"ผลิต/สร้าง"},{"front":"generous (adj.)","back":"ใจกว้าง"},{"front":"global (adj.)","back":"ทั่วโลก"},{"front":"goal (n.)","back":"เป้าหมาย"},{"front":"govern (v.)","back":"ปกครอง"},{"front":"gradual (adj.)","back":"ค่อยเป็นค่อยไป"},{"front":"graduate (n.)","back":"บัณฑิต"},{"front":"graduate (v.)","back":"สำเร็จการศึกษา"},{"front":"grant (n.)","back":"ทุน"},{"front":"grant (v.)","back":"ให้"},{"front":"guarantee (n.)","back":"การรับประกัน"},{"front":"guarantee (v.)","back":"รับประกัน"}],"progress":0,"xp":0,"preset":true},{"id":"preset_H","name":"หมวด H","icon":"🏠","langFront":"English","langBack":"ไทย","words":[{"front":"habit (n.)","back":"นิสัย"},{"front":"harm (n.)","back":"อันตราย"},{"front":"harm (v.)","back":"ทำร้าย"},{"front":"harvest (n.)","back":"การเก็บเกี่ยว"},{"front":"harvest (v.)","back":"เก็บเกี่ยว"},{"front":"health (n.)","back":"สุขภาพ"},{"front":"helpful (adj.)","back":"มีประโยชน์"},{"front":"hesitate (v.)","back":"ลังเล"},{"front":"highlight (n.)","back":"จุดเด่น"},{"front":"highlight (v.)","back":"เน้น"},{"front":"historical (adj.)","back":"เกี่ยวกับประวัติศาสตร์"},{"front":"honest (adj.)","back":"ซื่อสัตย์"},{"front":"honor (n.)","back":"เกียรติยศ"},{"front":"honor (v.)","back":"ให้เกียรติ"},{"front":"host (n.)","back":"เจ้าภาพ"},{"front":"host (v.)","back":"เป็นเจ้าภาพ"},{"front":"humble (adj.)","back":"ถ่อมตัว"},{"front":"humor (n.)","back":"อารมณ์ขัน"},{"front":"hurry (n.)","back":"ความรีบ"},{"front":"hurry (v.)","back":"รีบเร่ง"},{"front":"hypothesis (n.)","back":"สมมติฐาน"}],"progress":0,"xp":0,"preset":true},{"id":"preset_I","name":"หมวด I","icon":"💡","langFront":"English","langBack":"ไทย","words":[{"front":"ideal (adj.)","back":"เหมาะสมที่สุด"},{"front":"identify (v.)","back":"ระบุ"},{"front":"identity (n.)","back":"อัตลักษณ์"},{"front":"idle (adj.)","back":"เกียจคร้าน"},{"front":"ignorance (n.)","back":"ความไม่รู้"},{"front":"ignore (v.)","back":"เพิกเฉย"},{"front":"illustrate (v.)","back":"อธิบายด้วยภาพ"},{"front":"image (n.)","back":"ภาพ/ภาพลักษณ์"},{"front":"imitate (v.)","back":"เลียนแบบ"},{"front":"immediate (adj.)","back":"ทันทีทันใด"},{"front":"immense (adj.)","back":"ใหญ่โตมาก"},{"front":"impact (n.)","back":"ผลกระทบ"},{"front":"impact (v.)","back":"ส่งผลกระทบ"},{"front":"impatient (adj.)","back":"ใจร้อน"},{"front":"impede (v.)","back":"ขัดขวาง"},{"front":"implication (n.)","back":"ผลสืบเนื่อง"},{"front":"imply (v.)","back":"บ่งบอก"},{"front":"import (n.)","back":"สินค้านำเข้า"},{"front":"import (v.)","back":"นำเข้า"},{"front":"important (adj.)","back":"สำคัญ"},{"front":"impose (v.)","back":"กำหนด/บังคับใช้"},{"front":"impress (v.)","back":"ประทับใจ"},{"front":"impression (n.)","back":"ความประทับใจ"},{"front":"impressive (adj.)","back":"น่าประทับใจ"},{"front":"improve (v.)","back":"ปรับปรุง"},{"front":"inability (n.)","back":"ความไร้ความสามารถ"},{"front":"inadequate (adj.)","back":"ไม่เพียงพอ"},{"front":"incident (n.)","back":"เหตุการณ์"},{"front":"include (v.)","back":"รวม"},{"front":"income (n.)","back":"รายได้"},{"front":"incredible (adj.)","back":"เหลือเชื่อ"},{"front":"independent (adj.)","back":"เป็นอิสระ"},{"front":"indicate (v.)","back":"แสดง/ชี้ให้เห็น"},{"front":"individual (n.)","back":"บุคคล"},{"front":"industry (n.)","back":"อุตสาหกรรม"},{"front":"inevitable (adj.)","back":"หลีกเลี่ยงไม่ได้"},{"front":"infect (v.)","back":"ทำให้ติดเชื้อ"},{"front":"infection (n.)","back":"การติดเชื้อ"},{"front":"influence (n.)","back":"อิทธิพล"},{"front":"influence (v.)","back":"มีอิทธิพล"},{"front":"inform (v.)","back":"แจ้ง"},{"front":"initiative (n.)","back":"ความคิดริเริ่ม"},{"front":"innovate (v.)","back":"สร้างสรรค์นวัตกรรม"},{"front":"inspire (v.)","back":"สร้างแรงบันดาลใจ"},{"front":"interpret (v.)","back":"ตีความ"},{"front":"investigate (v.)","back":"สืบสวน"},{"front":"involve (v.)","back":"เกี่ยวข้อง"},{"front":"issue (n.)","back":"ประเด็น/ปัญหา"}],"progress":0,"xp":0,"preset":true},{"id":"preset_J","name":"หมวด J","icon":"💎","langFront":"English","langBack":"ไทย","words":[{"front":"jealous (adj.)","back":"อิจฉา"},{"front":"justice (n.)","back":"ความยุติธรรม"}],"progress":0,"xp":0,"preset":true},{"id":"preset_K","name":"หมวด K","icon":"🔑","langFront":"English","langBack":"ไทย","words":[{"front":"keen (adj.)","back":"กระตือรือร้น"},{"front":"knowledge (n.)","back":"ความรู้"}],"progress":0,"xp":0,"preset":true},{"id":"preset_L","name":"หมวด L","icon":"🦁","langFront":"English","langBack":"ไทย","words":[{"front":"lack (v.)","back":"ขาด"},{"front":"lack (n.)","back":"ความขาดแคลน"},{"front":"launch (v.)","back":"เปิดตัว"},{"front":"launch (n.)","back":"การเปิดตัว"},{"front":"leadership (n.)","back":"ความเป็นผู้นำ"},{"front":"legal (adj.)","back":"ถูกกฎหมาย"},{"front":"limit (v.)","back":"จำกัด"},{"front":"limit (n.)","back":"ขีดจำกัด"},{"front":"logical (adj.)","back":"สมเหตุสมผล"},{"front":"loyal (adj.)","back":"ซื่อสัตย์/จงรักภักดี"}],"progress":0,"xp":0,"preset":true},{"id":"preset_M","name":"หมวด M","icon":"🌙","langFront":"English","langBack":"ไทย","words":[{"front":"maintain (v.)","back":"รักษา"},{"front":"manage (v.)","back":"จัดการ"},{"front":"maximum (n.)","back":"สูงสุด"},{"front":"measure (v.)","back":"วัด"},{"front":"measure (n.)","back":"การวัด"},{"front":"method (n.)","back":"วิธีการ"},{"front":"minimum (n.)","back":"ต่ำสุด"},{"front":"modify (v.)","back":"แก้ไข"},{"front":"motivate (v.)","back":"จูงใจ"}],"progress":0,"xp":0,"preset":true},{"id":"preset_N","name":"หมวด N","icon":"🌟","langFront":"English","langBack":"ไทย","words":[{"front":"natural (adj.)","back":"ธรรมชาติ"},{"front":"necessary (adj.)","back":"จำเป็น"},{"front":"negotiate (v.)","back":"เจรจา"},{"front":"neutral (adj.)","back":"เป็นกลาง"}],"progress":0,"xp":0,"preset":true},{"id":"preset_O","name":"หมวด O","icon":"🎯","langFront":"English","langBack":"ไทย","words":[{"front":"objective (n.)","back":"เป้าหมาย"},{"front":"objective (adj.)","back":"เป็นกลาง"},{"front":"observe (v.)","back":"สังเกต"},{"front":"obtain (v.)","back":"ได้รับ"},{"front":"obvious (adj.)","back":"ชัดเจน"},{"front":"operate (v.)","back":"ดำเนินการ"},{"front":"opportunity (n.)","back":"โอกาส"},{"front":"organize (v.)","back":"จัดระเบียบ"},{"front":"outcome (n.)","back":"ผลลัพธ์"}],"progress":0,"xp":0,"preset":true},{"id":"preset_P","name":"หมวด P","icon":"🌸","langFront":"English","langBack":"ไทย","words":[{"front":"participate (v.)","back":"เข้าร่วม"},{"front":"pattern (n.)","back":"รูปแบบ"},{"front":"perceive (v.)","back":"รับรู้"},{"front":"perform (v.)","back":"แสดง/ปฏิบัติ"},{"front":"permit (v.)","back":"อนุญาต"},{"front":"permit (n.)","back":"ใบอนุญาต"},{"front":"perspective (n.)","back":"มุมมอง"},{"front":"positive (adj.)","back":"เชิงบวก"},{"front":"potential (n.)","back":"ศักยภาพ"},{"front":"potential (adj.)","back":"ที่อาจเป็นไปได้"},{"front":"predict (v.)","back":"ทำนาย"},{"front":"prepare (v.)","back":"เตรียม"},{"front":"preserve (v.)","back":"อนุรักษ์"},{"front":"prevent (v.)","back":"ป้องกัน"},{"front":"primary (adj.)","back":"หลัก/สำคัญ"},{"front":"principle (n.)","back":"หลักการ"},{"front":"process (n.)","back":"กระบวนการ"},{"front":"process (v.)","back":"ประมวลผล"},{"front":"produce (v.)","back":"ผลิต"},{"front":"professional (adj.)","back":"มืออาชีพ"},{"front":"professional (n.)","back":"ผู้เชี่ยวชาญ"},{"front":"progress (n.)","back":"ความก้าวหน้า"},{"front":"progress (v.)","back":"ก้าวหน้า"},{"front":"promote (v.)","back":"ส่งเสริม"},{"front":"protect (v.)","back":"ปกป้อง"},{"front":"provide (v.)","back":"จัดหา"},{"front":"publish (v.)","back":"เผยแพร่"},{"front":"pursue (v.)","back":"ติดตาม/มุ่งหมาย"}],"progress":0,"xp":0,"preset":true},{"id":"preset_Q","name":"หมวด Q","icon":"👑","langFront":"English","langBack":"ไทย","words":[{"front":"qualify (v.)","back":"มีคุณสมบัติ"},{"front":"quantity (n.)","back":"ปริมาณ"}],"progress":0,"xp":0,"preset":true},{"id":"preset_R","name":"หมวด R","icon":"🌈","langFront":"English","langBack":"ไทย","words":[{"front":"realize (v.)","back":"ตระหนัก/รู้"},{"front":"recognize (v.)","back":"จดจำ/ยอมรับ"},{"front":"reduce (v.)","back":"ลด"},{"front":"reflect (v.)","back":"สะท้อน"},{"front":"reform (v.)","back":"ปฏิรูป"},{"front":"reform (n.)","back":"การปฏิรูป"},{"front":"refuse (v.)","back":"ปฏิเสธ"},{"front":"relate (v.)","back":"เกี่ยวข้อง"},{"front":"relevant (adj.)","back":"เกี่ยวข้อง"},{"front":"replace (v.)","back":"แทนที่"},{"front":"require (v.)","back":"ต้องการ"},{"front":"research (v.)","back":"วิจัย"},{"front":"research (n.)","back":"การวิจัย"},{"front":"resolve (v.)","back":"แก้ไข"},{"front":"respond (v.)","back":"ตอบสนอง"},{"front":"responsible (adj.)","back":"รับผิดชอบ"},{"front":"restore (v.)","back":"ฟื้นฟู"},{"front":"reveal (v.)","back":"เปิดเผย"}],"progress":0,"xp":0,"preset":true},{"id":"preset_S","name":"หมวด S","icon":"⭐","langFront":"English","langBack":"ไทย","words":[{"front":"significant (adj.)","back":"สำคัญ"},{"front":"similar (adj.)","back":"คล้ายคลึง"},{"front":"simulate (v.)","back":"จำลอง"},{"front":"solve (v.)","back":"แก้ปัญหา"},{"front":"specific (adj.)","back":"เฉพาะเจาะจง"},{"front":"strategy (n.)","back":"กลยุทธ์"},{"front":"succeed (v.)","back":"ประสบความสำเร็จ"},{"front":"suggest (v.)","back":"แนะนำ"},{"front":"support (v.)","back":"สนับสนุน"},{"front":"support (n.)","back":"การสนับสนุน"},{"front":"survive (v.)","back":"รอดชีวิต"},{"front":"sustainable (adj.)","back":"ยั่งยืน"},{"front":"symbol (n.)","back":"สัญลักษณ์"}],"progress":0,"xp":0,"preset":true},{"id":"preset_T","name":"หมวด T","icon":"🌳","langFront":"English","langBack":"ไทย","words":[{"front":"technology (n.)","back":"เทคโนโลยี"},{"front":"theory (n.)","back":"ทฤษฎี"},{"front":"tradition (n.)","back":"ประเพณี"},{"front":"transform (v.)","back":"เปลี่ยนแปลง"},{"front":"trust (v.)","back":"ไว้วางใจ"},{"front":"trust (n.)","back":"ความไว้วางใจ"}],"progress":0,"xp":0,"preset":true},{"id":"preset_U","name":"หมวด U","icon":"☂️","langFront":"English","langBack":"ไทย","words":[{"front":"unique (adj.)","back":"เป็นเอกลักษณ์"},{"front":"unite (v.)","back":"รวมกัน"},{"front":"update (v.)","back":"อัปเดต"},{"front":"update (n.)","back":"การอัปเดต"},{"front":"useful (adj.)","back":"มีประโยชน์"}],"progress":0,"xp":0,"preset":true},{"id":"preset_V","name":"หมวด V","icon":"🎯","langFront":"English","langBack":"ไทย","words":[{"front":"value (n.)","back":"คุณค่า"},{"front":"value (v.)","back":"ให้คุณค่า"},{"front":"various (adj.)","back":"หลากหลาย"},{"front":"vision (n.)","back":"วิสัยทัศน์"},{"front":"volunteer (n.)","back":"อาสาสมัคร"},{"front":"volunteer (v.)","back":"อาสา"}],"progress":0,"xp":0,"preset":true},{"id":"preset_W","name":"หมวด W","icon":"🌊","langFront":"English","langBack":"ไทย","words":[{"front":"wealth (n.)","back":"ความมั่งคั่ง"},{"front":"willing (adj.)","back":"เต็มใจ"},{"front":"wisdom (n.)","back":"ความฉลาด"},{"front":"worry (v.)","back":"กังวล"},{"front":"worry (n.)","back":"ความกังวล"}],"progress":0,"xp":0,"preset":true},{"id":"preset_Y","name":"หมวด Y","icon":"🌻","langFront":"English","langBack":"ไทย","words":[{"front":"yield (v.)","back":"ให้ผล"},{"front":"yield (n.)","back":"ผลผลิต"}],"progress":0,"xp":0,"preset":true},{"id":"preset_Z","name":"หมวด Z","icon":"⚡","langFront":"English","langBack":"ไทย","words":[{"front":"zeal (n.)","back":"ความกระตือรือร้น"}],"progress":0,"xp":0,"preset":true}];
-function loadDecks() {
-  try {
-    const saved = localStorage.getItem('vq_decks');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      const userDecks = parsed.filter(d => !d.preset);
-      const presetWithProgress = PRESET_DECKS_DATA.map(pd => {
-        const sp = parsed.find(d => d.id === pd.id);
-        return sp ? {...pd, progress: sp.progress||0, xp: sp.xp||0} : pd;
+function loadDecks(){
+  try{
+    const saved=localStorage.getItem('vq_decks');
+    if(saved){
+      const parsed=JSON.parse(saved);
+      const userDecks=parsed.filter(d=>!d.preset);
+      const presetWithProgress=PRESET_DECKS_DATA.map(pd=>{
+        const sp=parsed.find(d=>d.id===pd.id);
+        return sp?{...pd,progress:sp.progress||0,xp:sp.xp||0}:pd;
       });
-      return [...presetWithProgress, ...userDecks];
+      return [...presetWithProgress,...userDecks];
     }
-  } catch(e) { console.log('loadDecks error:', e); }
+  }catch(e){console.log('loadDecks error:',e);}
   return JSON.parse(JSON.stringify(PRESET_DECKS_DATA));
 }
-let decks = loadDecks();
-let stats = loadStats();
+function saveDecks(){
+  const toSave=decks.map(d=>d.preset?{id:d.id,preset:true,progress:d.progress||0,xp:d.xp||0}:d);
+  localStorage.setItem('vq_decks',JSON.stringify(toSave));
+}
+function loadStats(){try{return JSON.parse(localStorage.getItem('vq_stats')||'{"xp":0,"streak":0,"rounds":0,"correct":0,"total":0}');}catch{return{xp:0,streak:0,rounds:0,correct:0,total:0};}}
+function saveStats(){localStorage.setItem('vq_stats',JSON.stringify(stats));}
 
-// ===== GAME STATE =====
-let currentDeck=null, questions=[], qIndex=0, hearts=5, gameXP=0, gameMistakes=0, gameCorrect=0, currentQ=null, answered=false;
+let decks=loadDecks();
+let stats=loadStats();
+let currentDeck=null,questions=[],qIndex=0,hearts=5,gameXP=0,gameMistakes=0,gameCorrect=0,currentQ=null,answered=false;
 
-// ===== HELPERS =====
-function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
-function shuffle(a) { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
-
-function switchTab(tab) {
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function switchTab(tab){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -507,21 +289,12 @@ function switchTab(tab) {
   if(tab==='manage'){document.getElementById('manageScreen').classList.add('active');renderManage();}
 }
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-
-// ===== HOME =====
-function renderHome() {
+function renderHome(){
   const grid=document.getElementById('deckGrid');
-  if(!decks.length){grid.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><h3>ยังไม่มีชุดคำศัพท์</h3><p>กดสร้างชุดใหม่เพื่อเริ่มต้น</p></div>`;return;}
+  if(!decks.length){grid.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><h3>ยังไม่มีชุดคำศัพท์</h3><p>กดสร้างชุดใหม่เพื่อเริ่มต้น</p></div>';return;}
   grid.innerHTML=decks.map(d=>{
     const pct=d.words.length?Math.round(d.progress/d.words.length*100):0;
-    return`<div class="deck-card" onclick="startGame('${d.id}')">
-      <div class="deck-icon" style="background:rgba(88,204,2,0.12)">${d.icon}</div>
-      <div class="deck-info">
-        <div class="deck-name">${d.name}</div>
-        <div class="deck-meta">${d.words.length} คำ • ${d.langFront}→${d.langBack} • ${d.xp||0} XP</div>
-        <div class="deck-progress-bar"><div class="deck-progress-fill" style="width:${pct}%"></div></div>
-      </div><div class="deck-chevron">›</div>
-    </div>`;
+    return '<div class="deck-card" onclick="startGame(''+d.id+'')"><div class="deck-icon" style="background:rgba(88,204,2,0.12)">'+d.icon+'</div><div class="deck-info"><div class="deck-name">'+d.name+'</div><div class="deck-meta">'+d.words.length+' คำ • '+d.langFront+'→'+d.langBack+' • '+(d.xp||0)+' XP</div><div class="deck-progress-bar"><div class="deck-progress-fill" style="width:'+pct+'%"></div></div></div><div class="deck-chevron">›</div></div>';
   }).join('');
   document.getElementById('streakCount').textContent=stats.streak;
   document.getElementById('navXP').textContent=stats.xp;
@@ -529,27 +302,20 @@ function renderHome() {
   document.getElementById('statRounds').textContent=stats.rounds;
   document.getElementById('statXP').textContent=stats.xp;
   document.getElementById('statAcc').textContent=stats.total?Math.round(stats.correct/stats.total*100)+'%':'—';
-
-  // iOS install hint
   const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isStandalone=window.navigator.standalone;
-  if(isIOS&&!isStandalone&&!localStorage.getItem('installDismissed')){
+  if(isIOS&&!window.navigator.standalone&&!localStorage.getItem('installDismissed')){
     document.getElementById('installBanner').style.display='flex';
   }
 }
-
-// ===== GAME =====
-function startGame(id) {
+function startGame(id){
   currentDeck=decks.find(d=>d.id===id);
   if(!currentDeck||currentDeck.words.length<2){showToast('ต้องมีคำศัพท์อย่างน้อย 2 คำ');return;}
   hearts=5;gameXP=0;gameMistakes=0;gameCorrect=0;qIndex=0;answered=false;
   questions=buildQuestions(currentDeck);
   document.getElementById('tabBar').style.display='none';
-  showScreen('gameScreen');
-  renderHearts();renderQuestion();
+  showScreen('gameScreen');renderHearts();renderQuestion();
 }
-
-function buildQuestions(deck) {
+function buildQuestions(deck){
   const words=shuffle([...deck.words]).slice(0,Math.min(deck.words.length,10));
   return words.map((w,i)=>{
     const types=['mc'];
@@ -558,103 +324,86 @@ function buildQuestions(deck) {
     return{type:types[i%types.length],word:w,deck};
   });
 }
-
-function renderQuestion() {
+function renderQuestion(){
   if(qIndex>=questions.length){endGame();return;}
-  currentQ=questions[qIndex]; answered=false;
-  const pct=Math.round(qIndex/questions.length*100);
-  document.getElementById('progressFill').style.width=pct+'%';
-  document.getElementById('progressText').textContent=`${qIndex}/${questions.length}`;
+  currentQ=questions[qIndex];answered=false;
+  document.getElementById('progressFill').style.width=Math.round(qIndex/questions.length*100)+'%';
+  document.getElementById('progressText').textContent=qIndex+'/'+questions.length;
   document.getElementById('feedbackBanner').className='feedback-banner';
-  const area=document.getElementById('questionArea');
   const cb=document.getElementById('checkBtn');
-  cb.disabled=true; cb.textContent='ตรวจคำตอบ'; cb.onclick=handleCheck;
-  cb.style.cssText=''; cb.className='btn btn-primary'; cb.style.display='';
+  cb.disabled=true;cb.textContent='ตรวจคำตอบ';cb.onclick=handleCheck;
+  cb.style.cssText='';cb.className='btn btn-primary';cb.style.display='';
+  const area=document.getElementById('questionArea');
   if(currentQ.type==='mc')renderMC(area,currentQ);
   else if(currentQ.type==='type')renderType(area,currentQ);
   else renderMatch(area,currentQ);
 }
-
-function renderMC(area,q) {
+function renderMC(area,q){
   const others=q.deck.words.filter(w=>w.back!==q.word.back);
   shuffle(others);
   const choices=shuffle([q.word,...others.slice(0,3)]);
-  area.innerHTML=`<div class="round-type type-mc">เลือกคำตอบ</div>
-    <div class="q-label">คำแปลของคำต่อไปนี้คืออะไร?</div>
-    <div class="q-word">${q.word.front}</div>
-    <div class="q-hint">${q.deck.langFront} → ${q.deck.langBack}</div>
-    <div class="options-grid">
-      ${choices.map((c,i)=>`<button class="option-btn" id="opt_${i}" onclick="selectMC(${i},'${c.back.replace(/'/g,"\\'")}')"><span class="option-letter">${['A','B','C','D'][i]}</span>${c.back}</button>`).join('')}
-    </div>`;
+  const lets=['A','B','C','D'];
+  area.innerHTML='<div class="round-type type-mc">เลือกคำตอบ</div><div class="q-label">คำแปลของคำต่อไปนี้คืออะไร?</div><div class="q-word">'+q.word.front+'</div><div class="q-hint">'+q.deck.langFront+' → '+q.deck.langBack+'</div><div class="options-grid">'+
+    choices.map((c,i)=>'<button class="option-btn" id="opt_'+i+'" onclick="selectMC('+i+',''+c.back.replace(/\/g,'\\').replace(/'/g,"\'")+'')">'+'<span class="option-letter">'+lets[i]+'</span>'+c.back+'</button>').join('')+
+  '</div>';
 }
-
-function selectMC(idx,val) {
+function selectMC(idx,val){
   if(answered)return;
   document.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
   document.getElementById('opt_'+idx).classList.add('selected');
-  const cb=document.getElementById('checkBtn'); cb.disabled=false;
-  cb.dataset.mcVal=val; cb.dataset.mcIdx=idx;
+  const cb=document.getElementById('checkBtn');cb.disabled=false;
+  cb.dataset.mcVal=val;cb.dataset.mcIdx=idx;
 }
-
-function checkMC() {
+function checkMC(){
   const cb=document.getElementById('checkBtn');
-  const val=cb.dataset.mcVal; const idx=parseInt(cb.dataset.mcIdx);
+  const val=cb.dataset.mcVal;const idx=parseInt(cb.dataset.mcIdx);
   const correct=val===currentQ.word.back;
-  document.querySelectorAll('.option-btn').forEach((b,i)=>{
+  document.querySelectorAll('.option-btn').forEach(b=>{
     b.disabled=true;
     const txt=b.childNodes[1]?.textContent?.trim()||'';
     if(txt===currentQ.word.back)b.classList.add('correct');
   });
   if(!correct)document.getElementById('opt_'+idx).classList.add('wrong');
-  showFeedback(correct,currentQ.word.back); recordAnswer(correct);
+  showFeedback(correct,currentQ.word.back);recordAnswer(correct);
 }
-
-function renderType(area,q) {
-  area.innerHTML=`<div class="round-type type-type">พิมพ์คำตอบ</div>
-    <div class="q-label">พิมพ์คำแปลของ</div>
-    <div class="q-word">${q.word.front}</div>
-    <div class="q-hint">${q.deck.langFront} → ${q.deck.langBack}</div>
-    <input class="type-input" id="typeAnswer" placeholder="พิมพ์คำตอบ..." autocomplete="off" autocorrect="off" spellcheck="false">`;
+function renderType(area,q){
+  area.innerHTML='<div class="round-type type-type">พิมพ์คำตอบ</div><div class="q-label">พิมพ์คำแปลของ</div><div class="q-word">'+q.word.front+'</div><div class="q-hint">'+q.deck.langFront+' → '+q.deck.langBack+'</div><input class="type-input" id="typeAnswer" placeholder="พิมพ์คำตอบ..." autocomplete="off" autocorrect="off" spellcheck="false">';
   const inp=document.getElementById('typeAnswer');
   inp.focus();
-  inp.oninput=()=>{ document.getElementById('checkBtn').disabled=inp.value.trim()===''; };
-  inp.onkeydown=e=>{ if(e.key==='Enter'&&!document.getElementById('checkBtn').disabled)handleCheck(); };
+  inp.oninput=()=>{document.getElementById('checkBtn').disabled=inp.value.trim()==='';};
+  inp.onkeydown=e=>{if(e.key==='Enter'&&!document.getElementById('checkBtn').disabled)handleCheck();};
 }
-
-function checkType() {
+function checkType(){
   const inp=document.getElementById('typeAnswer');
   const correct=inp.value.trim().toLowerCase()===currentQ.word.back.toLowerCase();
-  inp.disabled=true; inp.className='type-input '+(correct?'correct':'wrong');
-  showFeedback(correct,currentQ.word.back); recordAnswer(correct);
+  inp.disabled=true;inp.className='type-input '+(correct?'correct':'wrong');
+  showFeedback(correct,currentQ.word.back);recordAnswer(correct);
 }
-
-function renderMatch(area,q) {
+function renderMatch(area,q){
   const pool=shuffle([...q.deck.words]).slice(0,Math.min(4,q.deck.words.length));
   if(!pool.find(w=>w.front===q.word.front))pool[0]=q.word;
-  window._matchPairs=pool; window._matchedIds=new Set(); window._matchSel=null;
+  window._matchPairs=pool;window._matchedIds=new Set();window._matchSel=null;
   const lefts=shuffle(pool.map(w=>({text:w.front,id:w.front})));
   const rights=shuffle(pool.map(w=>({text:w.back,id:w.front})));
-  area.innerHTML=`<div class="round-type type-match">จับคู่คำศัพท์</div>
-    <div class="q-label">จับคู่คำกับความหมาย</div>
-    <div style="height:10px"></div>
-    <div class="match-grid">
-      ${lefts.map(l=>`<button class="match-btn" id="ml_${l.id}" onclick="matchClick('left','${l.id}')">${l.text}</button>`).join('')}
-      ${rights.map(r=>`<button class="match-btn" id="mr_${r.id}" onclick="matchClick('right','${r.id}')">${r.text}</button>`).join('')}
-    </div>`;
+  const esc=s=>s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  area.innerHTML='<div class="round-type type-match">จับคู่คำศัพท์</div><div class="q-label">จับคู่คำกับความหมาย</div><div style="height:10px"></div><div class="match-grid">'+
+    lefts.map(l=>'<button class="match-btn" id="ml_'+esc(l.id)+'" onclick="matchClick('left',''+esc(l.id)+'')">'+l.text+'</button>').join('')+
+    rights.map(r=>'<button class="match-btn" id="mr_'+esc(r.id)+'" onclick="matchClick('right',''+esc(r.id)+'')">'+r.text+'</button>').join('')+
+  '</div>';
   document.getElementById('checkBtn').style.display='none';
 }
-
-window.matchClick=function(side,id) {
+window.matchClick=function(side,id){
   if(window._matchedIds.has(id))return;
+  const elId=(side==='left'?'ml_':'mr_')+id;
+  const el=document.getElementById(elId);
+  if(!el)return;
   if(!window._matchSel){
     document.querySelectorAll('.match-btn').forEach(b=>b.classList.remove('selected'));
-    document.getElementById((side==='left'?'ml_':'mr_')+id).classList.add('selected');
-    window._matchSel={side,id};
-  } else {
+    el.classList.add('selected');window._matchSel={side,id};
+  }else{
     if(window._matchSel.side===side){
       document.querySelectorAll('.match-btn').forEach(b=>b.classList.remove('selected'));
-      document.getElementById((side==='left'?'ml_':'mr_')+id).classList.add('selected');
-      window._matchSel={side,id}; return;
+      el.classList.add('selected');window._matchSel={side,id};return;
     }
     const lId=side==='left'?id:window._matchSel.id;
     const rId=side==='right'?id:window._matchSel.id;
@@ -663,26 +412,24 @@ window.matchClick=function(side,id) {
     if(lId===rId){
       lEl.classList.remove('selected');lEl.classList.add('matched');lEl.disabled=true;
       rEl.classList.remove('selected');rEl.classList.add('matched');rEl.disabled=true;
-      window._matchedIds.add(lId); window._matchSel=null;
+      window._matchedIds.add(lId);window._matchSel=null;
       if(window._matchedIds.size===window._matchPairs.length){
-        setTimeout(()=>{ showFeedback(true,''); recordAnswer(true);
-          const cb=document.getElementById('checkBtn'); cb.style.display=''; cb.disabled=false; },400);
+        setTimeout(()=>{showFeedback(true,'');recordAnswer(true);
+          const cb=document.getElementById('checkBtn');cb.style.display='';cb.disabled=false;},400);
       }
-    } else {
+    }else{
       [lEl,rEl].forEach(e=>{e.classList.add('shake');setTimeout(()=>e.classList.remove('shake','selected'),500);});
-      window._matchSel=null; recordAnswer(false); showFeedback(false,'');
+      window._matchSel=null;recordAnswer(false);showFeedback(false,'');
     }
   }
 };
-
-function handleCheck() {
+function handleCheck(){
   if(answered){nextQuestion();return;}
   if(currentQ.type==='mc')checkMC();
   else if(currentQ.type==='type')checkType();
   else nextQuestion();
 }
-
-function showFeedback(correct,correctAnswer) {
+function showFeedback(correct,correctAnswer){
   answered=true;
   const fb=document.getElementById('feedbackBanner');
   const msgs=['ถูกต้อง!','ยอดเยี่ยม!','เก่งมาก!','สุดยอด!'];
@@ -690,48 +437,39 @@ function showFeedback(correct,correctAnswer) {
     fb.className='feedback-banner correct-banner show';
     document.getElementById('feedbackIcon').textContent='🎉';
     document.getElementById('feedbackTitle').textContent=msgs[Math.floor(Math.random()*4)];
-    document.getElementById('feedbackSub').textContent=correctAnswer?`คำตอบ: ${correctAnswer}`:'จับคู่สำเร็จ!';
+    document.getElementById('feedbackSub').textContent=correctAnswer?'คำตอบ: '+correctAnswer:'จับคู่สำเร็จ!';
     document.getElementById('feedbackText').className='feedback-text correct-banner';
-  } else {
-    if(hearts>0)hearts--;
-    renderHearts();
+  }else{
+    if(hearts>0)hearts--;renderHearts();
     fb.className='feedback-banner wrong-banner show';
     document.getElementById('feedbackIcon').textContent='💔';
     document.getElementById('feedbackTitle').textContent='ยังไม่ถูกต้อง';
-    document.getElementById('feedbackSub').textContent=correctAnswer?`คำตอบที่ถูกต้อง: ${correctAnswer}`:'ลองใหม่นะ!';
+    document.getElementById('feedbackSub').textContent=correctAnswer?'คำตอบที่ถูกต้อง: '+correctAnswer:'ลองใหม่นะ!';
     document.getElementById('feedbackText').className='feedback-text wrong-banner';
   }
   const cb=document.getElementById('checkBtn');
-  cb.style.display=''; cb.disabled=false;
+  cb.style.display='';cb.disabled=false;
   cb.textContent=qIndex+1>=questions.length?'🏁 ดูผลลัพธ์':'ต่อไป →';
   cb.className=correct?'btn btn-primary':'btn btn-danger';
   cb.onclick=nextQuestion;
 }
-
-function nextQuestion() {
+function nextQuestion(){
   qIndex++;
   if(qIndex>=questions.length||hearts<=0){endGame();return;}
   renderQuestion();
 }
-
-function recordAnswer(correct) {
+function recordAnswer(correct){
   if(correct){gameXP+=10;gameCorrect++;}
   else{gameMistakes++;gameXP=Math.max(0,gameXP-2);}
-  stats.total++; if(correct)stats.correct++; saveStats();
+  stats.total++;if(correct)stats.correct++;saveStats();
 }
-
-function renderHearts() {
-  document.getElementById('heartsRow').innerHTML=[1,2,3,4,5].map(i=>`<span class="heart-icon ${i>hearts?'lost':''}">❤️</span>`).join('');
+function renderHearts(){
+  document.getElementById('heartsRow').innerHTML=[1,2,3,4,5].map(i=>'<span class="heart-icon '+(i>hearts?'lost':'')+'">❤️</span>').join('');
   document.getElementById('navHearts').textContent=hearts;
 }
-
-function endGame() {
-  stats.xp+=gameXP; stats.rounds++; stats.streak++;
-  if(currentDeck){
-    currentDeck.xp=(currentDeck.xp||0)+gameXP;
-    currentDeck.progress=Math.min(currentDeck.words.length,(currentDeck.progress||0)+gameCorrect);
-    saveDecks();
-  }
+function endGame(){
+  stats.xp+=gameXP;stats.rounds++;stats.streak++;
+  if(currentDeck){currentDeck.xp=(currentDeck.xp||0)+gameXP;currentDeck.progress=Math.min(currentDeck.words.length,(currentDeck.progress||0)+gameCorrect);saveDecks();}
   saveStats();
   document.getElementById('tabBar').style.display='';
   const acc=questions.length?Math.round(gameCorrect/questions.length*100):0;
@@ -744,35 +482,21 @@ function endGame() {
   document.getElementById('resMistakes').textContent=gameMistakes;
   document.getElementById('streakCount').textContent=stats.streak;
   document.getElementById('navXP').textContent=stats.xp;
-  showScreen('resultScreen');
-  if(perfect)launchConfetti();
+  showScreen('resultScreen');if(perfect)launchConfetti();
 }
-
 function playAgain(){if(currentDeck)startGame(currentDeck.id);}
 function goHome(){document.getElementById('tabBar').style.display='';showScreen('homeScreen');switchTab('home');}
-
-// ===== MANAGE =====
-function renderManage() {
+function renderManage(){
   const list=document.getElementById('wm-deck-list');
-  if(!decks.length){list.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><h3>ยังไม่มีชุดคำศัพท์</h3><p>กดปุ่มด้านล่างเพื่อสร้างชุดแรก</p></div>`;return;}
-  list.innerHTML=decks.map(d=>`<div class="wm-deck-item">
-    <div class="wm-deck-icon">${d.icon}</div>
-    <div class="wm-deck-info"><div class="wm-deck-name">${d.name}</div><div class="wm-deck-count">${d.words.length} คำ • ${d.langFront}→${d.langBack}</div></div>
-    <div class="wm-actions">
-      <button class="icon-btn" onclick="openEditDeck('${d.id}')">✏️</button>
-      <button class="icon-btn" onclick="deleteDeck('${d.id}')">🗑️</button>
-    </div>
-  </div>`).join('');
+  if(!decks.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><h3>ยังไม่มีชุดคำศัพท์</h3><p>กดปุ่มด้านล่างเพื่อสร้างชุดแรก</p></div>';return;}
+  list.innerHTML=decks.map(d=>'<div class="wm-deck-item"><div class="wm-deck-icon">'+d.icon+'</div><div class="wm-deck-info"><div class="wm-deck-name">'+d.name+'</div><div class="wm-deck-count">'+d.words.length+' คำ • '+d.langFront+'→'+d.langBack+'</div></div><div class="wm-actions"><button class="icon-btn" onclick="openEditDeck(''+d.id+'')">✏️</button><button class="icon-btn" onclick="deleteDeck(''+d.id+'')">🗑️</button></div></div>').join('');
 }
-
 function deleteDeck(id){
   if(!confirm('ต้องการลบชุดคำศัพท์นี้หรือไม่?'))return;
-  decks=decks.filter(d=>d.id!==id); saveDecks(); renderManage(); renderHome();
-  showToast('ลบแล้ว');
+  decks=decks.filter(d=>d.id!==id);saveDecks();renderManage();renderHome();showToast('ลบแล้ว');
 }
-
-// ===== MODAL =====
-function openAddDeck(){editingDeckId=null;tempWords=[];selectedEmoji='📚';
+function openAddDeck(){
+  editingDeckId=null;tempWords=[];selectedEmoji='📚';
   document.getElementById('deckModalTitle').textContent='สร้างชุดคำศัพท์';
   document.getElementById('deckName').value='';
   document.getElementById('langFront').value='ไทย';
@@ -781,8 +505,8 @@ function openAddDeck(){editingDeckId=null;tempWords=[];selectedEmoji='📚';
   document.getElementById('modalDeck').classList.add('open');
 }
 function openEditDeck(id){
-  const d=decks.find(x=>x.id===id); if(!d)return;
-  editingDeckId=id; tempWords=[...d.words]; selectedEmoji=d.icon||'📚';
+  const d=decks.find(x=>x.id===id);if(!d)return;
+  editingDeckId=id;tempWords=[...d.words];selectedEmoji=d.icon||'📚';
   document.getElementById('deckModalTitle').textContent='แก้ไขชุดคำศัพท์';
   document.getElementById('deckName').value=d.name;
   document.getElementById('langFront').value=d.langFront;
@@ -791,14 +515,11 @@ function openEditDeck(id){
   document.getElementById('modalDeck').classList.add('open');
 }
 function closeDeckModal(){document.getElementById('modalDeck').classList.remove('open');}
-function renderEmojiPicker(){document.getElementById('emojiPicker').innerHTML=EMOJIS.map(e=>`<div class="emoji-opt ${e===selectedEmoji?'selected':''}" onclick="selEmoji('${e}')">${e}</div>`).join('');}
+function renderEmojiPicker(){document.getElementById('emojiPicker').innerHTML=EMOJIS.map(e=>'<div class="emoji-opt '+(e===selectedEmoji?'selected':'')+'" onclick="selEmoji(''+e+'')">'+e+'</div>').join('');}
 function selEmoji(e){selectedEmoji=e;renderEmojiPicker();}
 function renderWordList(){
   document.getElementById('wordCount').textContent=tempWords.length;
-  document.getElementById('wordList').innerHTML=tempWords.map((w,i)=>`<div class="word-item">
-    <div class="word-item-text"><div class="word-item-front">${w.front}</div><div class="word-item-back">${w.back}</div></div>
-    <button class="word-item-del" onclick="removeWord(${i})">✕</button>
-  </div>`).join('');
+  document.getElementById('wordList').innerHTML=tempWords.map((w,i)=>'<div class="word-item"><div class="word-item-text"><div class="word-item-front">'+w.front+'</div><div class="word-item-back">'+w.back+'</div></div><button class="word-item-del" onclick="removeWord('+i+')">✕</button></div>').join('');
 }
 function addWordToList(){
   const f=document.getElementById('newFront').value.trim();
@@ -821,33 +542,24 @@ function saveDeck(){
   else{decks.push({id:'deck_'+Date.now(),name,icon:selectedEmoji,langFront:lf,langBack:lb,words:[...tempWords],progress:0,xp:0});showToast('สร้างชุดใหม่แล้ว 🎉');}
   saveDecks();closeDeckModal();renderHome();renderManage();
 }
-
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&document.getElementById('modalDeck').classList.contains('open')){
     const af=document.activeElement;
     if(af.id==='newFront'||af.id==='newBack'){e.preventDefault();addWordToList();}
   }
 });
-
-// close modal on backdrop
 document.getElementById('modalDeck').addEventListener('click',function(e){if(e.target===this)closeDeckModal();});
-
 function launchConfetti(){
   const colors=['#58cc02','#1cb0f6','#ffc800','#ff4b4b','#ce82ff','#ff9600'];
   for(let i=0;i<55;i++){
-    const el=document.createElement('div'); el.className='confetti-piece';
-    el.style.cssText=`left:${Math.random()*100}vw;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.5}s`;
-    document.body.appendChild(el); setTimeout(()=>el.remove(),3500);
+    const el=document.createElement('div');el.className='confetti-piece';
+    el.style.cssText='left:'+Math.random()*100+'vw;background:'+colors[Math.floor(Math.random()*colors.length)]+';width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px;border-radius:'+(Math.random()>.5?'50%':'2px')+';animation-duration:'+(1.5+Math.random()*2)+'s;animation-delay:'+Math.random()*.5+'s';
+    document.body.appendChild(el);setTimeout(()=>el.remove(),3500);
   }
 }
-
-// ===== SERVICE WORKER =====
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
-  });
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
 }
-
 renderHome();
 </script>
 </body>
